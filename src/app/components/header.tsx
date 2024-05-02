@@ -25,7 +25,7 @@ const Header = () => {
     }
 
     return (
-        <header className="bg-[url('/traveler_banner.jpg')] mx-auto bg-cover bg-center bg-no-repeat px-5 py-32 max-w-7xl">
+        <header className="bg-[url('/traveler_banner.jpg')] w-full mx-auto bg-cover bg-center bg-no-repeat px-5 py-32">
             <Form {...form} >
                 <form onSubmit={form.handleSubmit(onSubmit)} className="bg-secondary opacity-90 rounded-md px-5 py-10">
                     <h1 className="text-4xl font-bold text-center pb-5">Pronto para a sua próxima viagem?</h1>

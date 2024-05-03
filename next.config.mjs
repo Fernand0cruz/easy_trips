@@ -5,6 +5,14 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: 'lh3.googleusercontent.com',
+            },
+            {
+                protocol: 'https',
+                hostname: 'a0.muscache.com',
+            },
+            {
+                protocol: 'https',
+                hostname: 'cdn.guiademoteis.com.br'
             }
         ]
     }

@@ -59,19 +59,27 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model tripCategory {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  slug      String
+  image     String
+  trips     Trip[]
+}
+
 model Trip {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
-  name         String
+  categoryId   String @db.ObjectId
   location     String
-  startDate    DateTime
-  endDate      DateTime
+  slug         String
   pricePerDay  Float
   description  String
   coverImage   String
   imagesUrl    String[]
   highlights   String[]
-  maxGuests    Int
+  maxGuests    Int @default(1)
   reservations Reservations[]
+  category     tripCategory @relation(fields: [categoryId], references: [id])
 }
 
 model Reservations {

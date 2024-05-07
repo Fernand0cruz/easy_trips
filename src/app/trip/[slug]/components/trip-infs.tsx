@@ -1,11 +1,16 @@
+import { Card } from "@/components/ui/card";
 import { CircleCheckBig } from "lucide-react";
+import TripReservation from "./trip-reservation";
+
 
 interface TripsInfsProps {
     description: string;
     highlights: string[];
+    category: string;
+    pricePerDay: number;
 }
 
-const TripsInfs = ({ description, highlights }: TripsInfsProps) => {
+const TripsInfs = ({ description, highlights, category, pricePerDay }: TripsInfsProps) => {
     return (
         <div className="my-5 flex flex-col gap-3 md:flex-row">
             <div className="flex flex-col gap-5 md:w-2/3">
@@ -22,6 +27,16 @@ const TripsInfs = ({ description, highlights }: TripsInfsProps) => {
                     }
                 </ul>
             </div>
+            <Card className="md:w-1/3 p-5">
+                {
+                    category === "Motel" ? (
+                        <h1 className="font-bold">R${pricePerDay.toFixed(2)} / noite</h1>
+                    ) : (
+                        <h1 className="font-bold">R${pricePerDay.toFixed(2)} / dia</h1>
+                    )
+                }
+                <TripReservation />
+            </Card>
         </div>
     );
 }

@@ -21,6 +21,8 @@ const Trips = async ({ params }: any) => {
             <TripsInfs 
                 description={trips.description} 
                 highlights={trips.highlights} 
+                category={trips.category.name}
+                pricePerDay={trips.pricePerDay}
             />
         </Card>
     );

@@ -6,9 +6,9 @@ import { prismaClient } from "@/lib/prisma";
 const QuickSearch = async () => {
     const category = await prismaClient.tripCategory.findMany({})
     return (
-        <div className="mt-10 flex flex-col gap-5">
+        <div className="my-10 flex flex-col gap-5">
             <h1 className="uppercase font-bold text-center">Buscas Rápidas</h1>
-            <div className="grid grid-cols-2 gap-3 md:grid md:grid-cols-4 md:gap-3">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                 {
                     category.map((item, index) => (
                         <Link key={index} href={"category/"+item.slug}>

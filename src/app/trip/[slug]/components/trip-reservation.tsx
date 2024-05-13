@@ -36,7 +36,9 @@ const TripReservation = () => {
     }
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={form.handleSubmit(onSubmit)}
+                className="flex flex-col gap-4 mt-4"
+            >
                 <FormField
                     control={form.control}
                     name="Date"
@@ -66,13 +68,14 @@ const TripReservation = () => {
                                 <Input {...field} type="number" min="1" max="25"
                                     value={Number(field.value)}
                                     onChange={(e) => field.onChange(Number(e.target.value))}
+                                    style={{ WebkitAppearance: "none", MozAppearance: "textfield" }}
                                 />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <Button type="submit">Submit</Button>
+                <Button type="submit" className="w-full">Fazer reserva</Button>
             </form>
         </Form>
     );

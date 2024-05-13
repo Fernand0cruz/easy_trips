@@ -1,77 +1,78 @@
-"use client"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+"use client";
+import { Button } from "@/components/ui/button";
+import { DatePickerWithRange } from "@/components/ui/datePickerWithRanger";
+import { Form, FormField, FormItem, FormMessage, FormControl, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
+import { addDays } from "date-fns";
 
+const TripReservationSchema = z.object({
+    Date: z.object({
+        from: z.date(),
+        to: z.date()
+    }),
+    numberOfPeople: z.number()
+        .min(1, { message: "Number of people must be at least 1" })
+        .max(25, { message: "Number of people must not exceed 25" })
+        .int("Number of people must be an integer"),
+});
 const TripReservation = () => {
-    const formSchema = z.object({
-        dateStart: z.string().nonempty("Campo obrigatório"),
-        dateEnd: z.string().nonempty("Campo obrigatório"),
-        guests: z.string().nonempty("Campo obrigatório")
-    });
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<z.infer<typeof TripReservationSchema>>({
+        resolver: zodResolver(TripReservationSchema),
         defaultValues: {
-            dateStart: "",
-            dateEnd: "",
-            guests: ""
+            Date: {
+                from: new Date(),
+                to: addDays(new Date(), 5),
+            },
+            numberOfPeople: 1,
         },
     });
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values);
+
+    function onSubmit(data: z.infer<typeof TripReservationSchema>) {
+        const from = data.Date.from.toLocaleDateString('pt-BR');
+        const to = data.Date.to.toLocaleDateString('pt-BR');
     }
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5 my-5">
-                <div className="flex w-full gap-3">
-                    <FormField
-                        control={form.control}
-                        name="dateStart"
-                        render={({ field }) => (
-                            <FormItem className="w-1/2">
-                                <FormLabel>Data inicio:</FormLabel>
-                                <FormControl>
-                                    <Input {...field} id="dateStart" type="date"/>
-                                </FormControl>
-                                <FormMessage {...field} />
-                            </FormItem>
-                        )}
-                        />
-                    <FormField
-                        control={form.control}
-                        name="dateEnd"
-                        render={({ field }) => (
-                            <FormItem className="w-1/2">
-                                <FormLabel>Data fim:</FormLabel>
-                                <FormControl>
-                                    <Input {...field} id="dateEnd" type="date"/>
-                                </FormControl>
-                                <FormMessage {...field} />
-                            </FormItem>
-                        )}
-                    />
-                </div>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
                 <FormField
                     control={form.control}
-                    name="guests"
-                    render={({ field }) => (
+                    name="Date"
+                    render={({ field: { onChange, value } }) => (
                         <FormItem>
-                            <FormLabel>Número de pessoas:</FormLabel>
+                            <FormLabel>Selecione um intervalo de datas:</FormLabel>
                             <FormControl>
-                                <Input {...field} id="guests" placeholder="Número de pessoas" type="number" />
+                                <DatePickerWithRange
+                                    value={{
+                                        from: form.watch('Date')?.from || value.from,
+                                        to: form.watch('Date')?.to || value.to,
+                                    }}
+                                    onChange={(range) => onChange(range)}
+                                />
                             </FormControl>
-                            <FormMessage {...field} />
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
-                <div className="flex justify-between">
-                    <span>Total: {} Dias</span>
-                    <span>Valor: R${}</span>
-                </div>
-                <Button type="submit">Reservar</Button>
+                <FormField
+                    control={form.control}
+                    name="numberOfPeople"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Insira o número de hóspedes:</FormLabel>
+                            <FormControl>
+                                <Input {...field} type="number" min="1" max="25"
+                                    value={Number(field.value)}
+                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <Button type="submit">Submit</Button>
             </form>
         </Form>
     );

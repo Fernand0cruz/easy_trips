@@ -8,9 +8,12 @@ interface TripsInfsProps {
     highlights: string[];
     category: string;
     pricePerDay: number;
+    startDate: Date | number | null;
+    endDate: Date | number | null;
+    maxGuests: number;
 }
 
-const TripsInfs = ({ description, highlights, category, pricePerDay }: TripsInfsProps) => {
+const TripsInfs = ({ description, highlights, category, pricePerDay, startDate, endDate, maxGuests }: TripsInfsProps) => {
     return (
         <div className="my-5 flex flex-col gap-3 md:flex-row">
             <div className="flex flex-col gap-5 md:w-2/3">
@@ -35,7 +38,7 @@ const TripsInfs = ({ description, highlights, category, pricePerDay }: TripsInfs
                         <h1 className="font-bold">R${pricePerDay.toFixed(2)} / dia</h1>
                     )
                 }
-                <TripReservation />
+                <TripReservation startDate={startDate} endDate={endDate} maxGuests={maxGuests}/>
             </Card>
         </div>
     );

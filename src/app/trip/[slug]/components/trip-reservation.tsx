@@ -6,15 +6,14 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
-import { addDays } from "date-fns";
+import { addDays, differenceInDays } from "date-fns";
 
 interface TripReservationProps {
-    startDate: Date | number | null;
-    endDate: Date | number | null;
     maxGuests: number;
+    pricePerDay: number;
 }
 
-const TripReservation = ({ startDate, endDate, maxGuests }: TripReservationProps) => {
+const TripReservation = ({ maxGuests, pricePerDay }: TripReservationProps) => {
     const TripReservationSchema = z.object({
         Date: z.object({
             from: z.date(),
@@ -41,9 +40,14 @@ const TripReservation = ({ startDate, endDate, maxGuests }: TripReservationProps
         const { Date: { from, to }, ...rest } = data;
         const fromDate = from.toLocaleDateString('pt-BR');
         const toDate = to.toLocaleDateString('pt-BR');
-        const newData = { from: fromDate, to: toDate, ...rest };
-        console.log(newData);
+        var newData = { from: fromDate, to: toDate, ...rest };
+        console.log(newData)
     }
+
+    const { Date: tripDate } = form.watch();
+
+    const totalDays = differenceInDays(tripDate.to, tripDate.from);
+    const totalPrice = totalDays * pricePerDay
 
     return (
         <Form {...form}>
@@ -83,6 +87,10 @@ const TripReservation = ({ startDate, endDate, maxGuests }: TripReservationProps
                         </FormItem>
                     )}
                 />
+                <div className="flex justify-between">
+                    <p>Total dias: {totalDays}</p>
+                    <p>Total preço: {totalPrice.toFixed(2)}</p>
+                </div>
                 <Button type="submit" className="w-full">Fazer reserva</Button>
             </form>
         </Form>

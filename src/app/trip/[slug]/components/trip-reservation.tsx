@@ -17,13 +17,7 @@ interface TripReservationProps {
 const TripReservation = ({ startDate, endDate, maxGuests }: TripReservationProps) => {
     const TripReservationSchema = z.object({
         Date: z.object({
-            from: z.date().refine((date: Date) => {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                return date >= today;
-            }, {
-                message: "A data inicial não pode ser menor que a data atual."
-            }),
+            from: z.date(),
             to: z.date()
         }),
         numberOfPeople: z.number()

@@ -11,9 +11,10 @@ interface TripsInfsProps {
     startDate: Date | number | null;
     endDate: Date | number | null;
     maxGuests: number;
+    tripId: string
 }
 
-const TripsInfs = ({ description, highlights, category, pricePerDay, endDate, maxGuests }: TripsInfsProps) => {
+const TripsInfs = ({ description, highlights, category, pricePerDay, endDate, startDate, maxGuests, tripId }: TripsInfsProps) => {
     return (
         <div className="my-5 flex flex-col gap-3 md:flex-row">
             <div className="flex flex-col gap-5 md:w-2/3">
@@ -38,8 +39,8 @@ const TripsInfs = ({ description, highlights, category, pricePerDay, endDate, ma
                         <h1 className="font-bold">R${pricePerDay.toFixed(2)} / dia</h1>
                     )
                 }
-                <p>Disponivel apartir da data: {endDate ? format(new Date(endDate), 'dd/MM/yyyy') : 'N/A'}</p>
-                <TripReservation pricePerDay={pricePerDay} maxGuests={maxGuests}/>
+                <p>Disponivel de: {startDate ? format(new Date(startDate), 'dd/MM/yyyy') : 'N/A'} a {endDate ? format(new Date(endDate), 'dd/MM/yyyy') : 'N/A'}</p>
+                <TripReservation tripId={tripId} pricePerDay={pricePerDay} maxGuests={maxGuests} />
             </Card>
         </div>
     );

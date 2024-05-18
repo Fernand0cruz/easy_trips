@@ -52,7 +52,11 @@ export function DatePickerWithRange({
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
-            disabled={(date: Date) => date < new Date()}
+            disabled={(date: Date) => {
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              return date < today;
+            }}
             initialFocus
             mode="range"
             defaultMonth={value?.from}

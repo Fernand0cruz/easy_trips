@@ -1,4 +1,6 @@
 "use client";
+
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { DatePickerWithRange } from "@/components/ui/datePickerWithRanger";
 import { Form, FormField, FormItem, FormMessage, FormControl, FormLabel } from "@/components/ui/form";
@@ -11,9 +13,12 @@ import { addDays, differenceInDays } from "date-fns";
 interface TripReservationProps {
     maxGuests: number;
     pricePerDay: number;
+    tripId: string;
 }
 
-const TripReservation = ({ maxGuests, pricePerDay }: TripReservationProps) => {
+const TripReservation = ({ maxGuests, pricePerDay, tripId }: TripReservationProps) => {
+    const [reservationError, setReservationError] = useState<string | null>(null);
+
     const TripReservationSchema = z.object({
         Date: z.object({
             from: z.date(),
@@ -36,18 +41,46 @@ const TripReservation = ({ maxGuests, pricePerDay }: TripReservationProps) => {
         },
     });
 
-    function onSubmit(data: z.infer<typeof TripReservationSchema>) {
+    const onSubmit = async (data: z.infer<typeof TripReservationSchema>) => {
         const { Date: { from, to }, ...rest } = data;
-        const fromDate = from.toLocaleDateString('pt-BR');
-        const toDate = to.toLocaleDateString('pt-BR');
-        var newData = { from: fromDate, to: toDate, ...rest };
-        console.log(newData)
-    }
+        const newData = {
+            from: new Date(from.setHours(0, 0, 0, 0)).toISOString(),
+            to: new Date(to.setHours(0, 0, 0, 0)).toISOString(),
+            ...rest
+        };
+
+        setReservationError(null);
+
+        const response = await fetch("/api/trips/check", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: Buffer.from(
+                JSON.stringify({
+                    startDate: newData.from,
+                    endDate: newData.to,
+                    tripId
+                })
+            )
+        });
+
+        const res = await response.json();
+
+        if (res.error) {
+            const errorMessages: { [key: string]: string } = {
+                "TRIP_ALREADY_RESERVED": "Esta data já está reservada",
+                "INVALID_START_DATE": "Data Inicial inválida",
+                "INVALID_END_DATE": "Data final inválida"
+            };
+            setReservationError(errorMessages[res.error.code] || "Erro desconhecido");
+        }
+    };
 
     const { Date: tripDate } = form.watch();
 
-    const totalDays = differenceInDays(tripDate.to, tripDate.from);
-    const totalPrice = totalDays * pricePerDay
+    const totalDays = useMemo(() => differenceInDays(tripDate.to, tripDate.from), [tripDate]);
+    const totalPrice = useMemo(() => totalDays * pricePerDay, [totalDays, pricePerDay]);
 
     return (
         <Form {...form}>
@@ -65,6 +98,9 @@ const TripReservation = ({ maxGuests, pricePerDay }: TripReservationProps) => {
                                 />
                             </FormControl>
                             <FormMessage>
+                                {reservationError && (
+                                    <p className=" text-red-900">{reservationError}</p>
+                                )}
                                 {(error as any)?.from?.message || (error as any)?.to?.message}
                             </FormMessage>
                         </FormItem>
@@ -77,7 +113,11 @@ const TripReservation = ({ maxGuests, pricePerDay }: TripReservationProps) => {
                         <FormItem>
                             <FormLabel>Insira o número de hóspedes:</FormLabel>
                             <FormControl>
-                                <Input {...field} type="number" min="1" max={maxGuests}
+                                <Input
+                                    {...field}
+                                    type="number"
+                                    min="1"
+                                    max={maxGuests}
                                     value={Number(field.value)}
                                     onChange={(e) => field.onChange(Number(e.target.value))}
                                     style={{ WebkitAppearance: "none", MozAppearance: "textfield" }}
@@ -87,9 +127,10 @@ const TripReservation = ({ maxGuests, pricePerDay }: TripReservationProps) => {
                         </FormItem>
                     )}
                 />
+
                 <div className="flex justify-between">
-                    <p>Total dias: {totalDays}</p>
-                    <p>Total preço: {totalPrice.toFixed(2)}</p>
+                    <p>{totalDays} Dia(s)</p>
+                    <p>Preço: R$ {totalPrice.toFixed(2)}</p>
                 </div>
                 <Button type="submit" className="w-full">Fazer reserva</Button>
             </form>

@@ -26,6 +26,7 @@ const Trips = async ({ params }: any) => {
                 endDate={trips.endDate}
                 maxGuests={trips.maxGuests}
                 pricePerDay={trips.pricePerDay}
+                tripId={trips.id}
             />
         </Card>
     );

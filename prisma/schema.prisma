@@ -71,8 +71,8 @@ model Trip {
   id           String         @id @default(auto()) @map("_id") @db.ObjectId
   categoryId   String @db.ObjectId
   location     String
-  startDate    DateTime?
-  endDate      DateTime?
+  startDate    DateTime
+  endDate      DateTime
   slug         String
   pricePerDay  Float
   description  String

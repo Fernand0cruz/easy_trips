@@ -79,7 +79,12 @@ const TripReservation = ({ maxGuests, pricePerDay, tripId }: TripReservationProp
 
     const { Date: tripDate } = form.watch();
 
-    const totalDays = useMemo(() => differenceInDays(tripDate.to, tripDate.from), [tripDate]);
+    const totalDays = useMemo(() => {
+        if (tripDate?.from && tripDate?.to) {
+            return differenceInDays(tripDate.to, tripDate.from);
+        }
+        return 0;
+    }, [tripDate]);
     const totalPrice = useMemo(() => totalDays * pricePerDay, [totalDays, pricePerDay]);
 
     return (

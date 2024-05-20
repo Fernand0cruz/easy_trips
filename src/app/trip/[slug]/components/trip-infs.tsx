@@ -1,7 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { CircleCheckBig } from "lucide-react";
 import TripReservation from "./trip-reservation";
-import { format } from "date-fns"
 
 interface TripsInfsProps {
     description: string;
@@ -39,8 +38,7 @@ const TripsInfs = ({ description, highlights, category, pricePerDay, endDate, st
                         <h1 className="font-bold">R${pricePerDay.toFixed(2)} / dia</h1>
                     )
                 }
-                <p>Disponivel de: {startDate ? format(new Date(startDate), 'dd/MM/yyyy') : 'N/A'} a {endDate ? format(new Date(endDate), 'dd/MM/yyyy') : 'N/A'}</p>
-                <TripReservation tripId={tripId} pricePerDay={pricePerDay} maxGuests={maxGuests} />
+                <TripReservation tripId={tripId} pricePerDay={pricePerDay} maxGuests={maxGuests}/>
             </Card>
         </div>
     );

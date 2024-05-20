@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { addDays, differenceInDays } from "date-fns";
+import { useRouter } from "next/navigation";
 
 interface TripReservationProps {
     maxGuests: number;
@@ -41,16 +42,19 @@ const TripReservation = ({ maxGuests, pricePerDay, tripId }: TripReservationProp
         },
     });
 
-    const onSubmit = async (data: z.infer<typeof TripReservationSchema>) => {
-        const { Date: { from, to }, ...rest } = data;
-        const newData = {
-            from: new Date(from.setHours(0, 0, 0, 0)).toISOString(),
-            to: new Date(to.setHours(0, 0, 0, 0)).toISOString(),
-            ...rest
-        };
+    const router = useRouter();
 
-        setReservationError(null);
+const onSubmit = async (data: z.infer<typeof TripReservationSchema>) => {
+    const { Date: { from, to }, ...rest } = data;
+    const newData = {
+        from: new Date(from.setHours(0, 0, 0, 0)).toISOString(),
+        to: new Date(to.setHours(0, 0, 0, 0)).toISOString(),
+        ...rest
+    };
 
+    setReservationError(null);
+
+    try {
         const response = await fetch("/api/trips/check", {
             method: "POST",
             headers: {
@@ -74,8 +78,13 @@ const TripReservation = ({ maxGuests, pricePerDay, tripId }: TripReservationProp
                 "INVALID_END_DATE": "Data final inválida"
             };
             setReservationError(errorMessages[res.error.code] || "Erro desconhecido");
+        } else {
+            router.push(`/trip/${tripId}/confirmation?startDate=${newData.from}&endDate=${newData.to}&maxGuest=${newData.numberOfPeople}`);
         }
-    };
+    } catch (error) {
+        setReservationError("Erro desconhecido");
+    }
+};
 
     const { Date: tripDate } = form.watch();
 
@@ -104,7 +113,7 @@ const TripReservation = ({ maxGuests, pricePerDay, tripId }: TripReservationProp
                             </FormControl>
                             <FormMessage>
                                 {reservationError && (
-                                    <p className=" text-red-900">{reservationError}</p>
+                                    <p className="text-red-900">{reservationError}</p>
                                 )}
                                 {(error as any)?.from?.message || (error as any)?.to?.message}
                             </FormMessage>
@@ -129,6 +138,7 @@ const TripReservation = ({ maxGuests, pricePerDay, tripId }: TripReservationProp
                                 />
                             </FormControl>
                             <FormMessage>{error?.message}</FormMessage>
+                            <span>Número máximo de pessoas: {maxGuests}</span>
                         </FormItem>
                     )}
                 />

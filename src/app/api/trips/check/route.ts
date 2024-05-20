@@ -52,7 +52,8 @@ export async function POST(request: Request) {
 
         return new NextResponse(
             JSON.stringify({
-                success: true
+                success: true,
+                trip,
             }),
             { status: 200 }
         );

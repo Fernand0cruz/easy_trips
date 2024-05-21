@@ -79,7 +79,7 @@ const onSubmit = async (data: z.infer<typeof TripReservationSchema>) => {
             };
             setReservationError(errorMessages[res.error.code] || "Erro desconhecido");
         } else {
-            router.push(`/trip/${tripId}/confirmation?startDate=${newData.from}&endDate=${newData.to}&maxGuest=${newData.numberOfPeople}`);
+            router.push(`/trip/${tripId}/confirmation?startDate=${newData.from}&endDate=${newData.to}&guest=${newData.numberOfPeople}`);
         }
     } catch (error) {
         setReservationError("Erro desconhecido");

@@ -2,10 +2,11 @@
 
 import { Card } from "@/components/ui/card";
 import { Trip } from "@prisma/client";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import TripImagens from "../components/trip-images";
+import { useSession } from "next-auth/react";
 
 const Confirmation = ({ params }: { params: { slug: string } }) => {
     const [trip, setTrip] = useState<Trip | null>(null);
@@ -13,37 +14,49 @@ const Confirmation = ({ params }: { params: { slug: string } }) => {
     const [loading, setLoading] = useState<boolean>(true);
     const searchParams = useSearchParams();
 
+    const router = useRouter();
+
+    const { status } = useSession()
+
     useEffect(() => {
         const fetchTrip = async () => {
-            try {
-                const response = await fetch("/api/trips/check", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        tripId: params.slug,
-                        startDate: searchParams.get("startDate"),
-                        endDate: searchParams.get("endDate"),
-                    })
-                });
+            const response = await fetch("/api/trips/check", {
+                method: "POST",
+                body: JSON.stringify({
+                    tripId: params.slug,
+                    startDate: searchParams.get("startDate"),
+                    endDate: searchParams.get("endDate"),
+                })
+            });
 
-                if (!response.ok) {
-                    throw new Error('Failed to fetch trip details');
-                }
+            const res = await response.json();
 
-                const { trip, totalPrice } = await response.json();
-
-                setTrip(trip);
-                setTotalPrice(totalPrice);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoading(false);
+            if(res.error) {
+                return router.push("/");
             }
+
+            setTrip(res.trip);
+            setTotalPrice(res.totalPrice);
+
+            setLoading(false);
         };
 
-        fetchTrip();
-    }, [params.slug, searchParams]);
+        if (status === "unauthenticated") {
+            router.push("/api/auth/signin");
+        }
 
-    if (loading) return <p>Loading...</p>;
+        if (status === "authenticated") {
+            const startDate = searchParams.get("startDate");
+            const endDate = searchParams.get("endDate");
+            const guest = searchParams.get("guest") || 1; // Assuming guest param is in searchParams or default to 1
+            router.push(`/trip/${params.slug}/confirmation?startDate=${startDate}&endDate=${endDate}&guest=${guest}`);
+        }
+
+        fetchTrip();
+    }, [params.slug, searchParams, status]);
+
+
+    if (loading) return <p className="text-center m-5">Loading...</p>;
     if (!trip) return <p>No trip found</p>;
 
     const startDate = new Date(searchParams.get("startDate") as string);
@@ -52,20 +65,11 @@ const Confirmation = ({ params }: { params: { slug: string } }) => {
 
     return (
         <Card className="mt-10 flex flex-col m-auto my-5 max-w-7xl p-2">
-            <h1 className="font-semibold text-xl">Sua viagem para:</h1>
-            <h2>{trip.location}</h2>
+            <h1 className="font-semibold text-xl">Sua viagem para: {trip.location}</h1>
             <div className="flex flex-col gap-3 my-5">
-                <div className="w-full h-72 flex rounded-md">
-                    <Image
-                        src={trip.coverImage}
-                        width={600}
-                        height={400}
-                        alt={trip.location}
-                        className="w-full h-full object-cover rounded-md"
-                    />
-                </div>
+                <TripImagens imageUrls={trip.imagesUrl} coverImage={trip.coverImage} />
                 <div>
-                    <h3>Informações sobre a viagem:</h3>
+                    <h1 className="font-semibold text-xl">Informações sobre a viagem:</h1>
                     <p>Local: {trip.location}</p>
                     <h3>Preço total: R$<span>{totalPrice?.toFixed(2)}</span></h3>
                     <div className="flex gap-2">

@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import TripImagens from "../components/trip-images";
 import { useSession } from "next-auth/react";
+import { toast } from "react-toastify";
 
 const Confirmation = ({ params }: { params: { slug: string } }) => {
     const [trip, setTrip] = useState<Trip | null>(null);
@@ -16,7 +17,7 @@ const Confirmation = ({ params }: { params: { slug: string } }) => {
 
     const router = useRouter();
 
-    const { status } = useSession()
+    const { status, data } = useSession()
 
     useEffect(() => {
         const fetchTrip = async () => {
@@ -59,6 +60,24 @@ const Confirmation = ({ params }: { params: { slug: string } }) => {
     if (loading) return <p className="text-center m-5">Loading...</p>;
     if (!trip) return <p>No trip found</p>;
 
+    const handleBuyClick = async () => {
+        await fetch("/api/trips/reservation", {
+            method: "POST",
+            body: JSON.stringify({
+                tripsId: params.slug,
+                startDate: searchParams.get("startDate"),
+                endDate: searchParams.get("endDate"),
+                guests: Number(searchParams.get("guest")),
+                userId: (data?.user as any)?.id,
+                totalPaid: totalPrice,
+            })
+        })
+        toast.success("Reserva realizada com sucesso!", {
+            position: "bottom-center"
+        })
+    }
+
+
     const startDate = new Date(searchParams.get("startDate") as string);
     const endDate = new Date(searchParams.get("endDate") as string)
     const guests = searchParams.get("guest")
@@ -81,7 +100,7 @@ const Confirmation = ({ params }: { params: { slug: string } }) => {
                         <span>Hóspedes:</span>
                         <p>{guests}</p>
                     </div>
-                    <Button className="flex w-full mt-5">Finalizar Compra</Button>
+                    <Button onClick={handleBuyClick} className="flex w-full mt-5">Finalizar Compra</Button>
                 </div>
             </div>
         </Card>

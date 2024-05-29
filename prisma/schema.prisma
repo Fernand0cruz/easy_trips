@@ -93,4 +93,5 @@ model Reservations {
   startDate DateTime
   endDate   DateTime
   totalPaid Float
+  guests    Int @default(5)
 }

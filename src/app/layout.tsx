@@ -5,6 +5,7 @@ import Navbar from "../components/ui/navbar";
 import { ThemeProvider } from "@/providers/theme-providers";
 import { AuthProvider } from "@/providers/auth-provider";
 import Footer from "@/components/ui/footer";
+import ToastProvider from "@/providers/toast-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,9 +29,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <Navbar />
-            {children}
-            <Footer/>
+            <ToastProvider>
+              <Navbar />
+              {children}
+              <Footer />
+            </ToastProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

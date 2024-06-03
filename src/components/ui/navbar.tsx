@@ -6,6 +6,7 @@ import { signIn, signOut, useSession } from "next-auth/react"
 import Image from 'next/image'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./dropdown-menu";
 import { Menu } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
     const { data, status } = useSession()
@@ -14,6 +15,12 @@ const Navbar = () => {
     }
     const handleLogoutClick = async () => {
         await signOut()
+    }
+
+    const router = useRouter()
+
+    const handleMyTrips = () => {
+        return router.push("/myTrips")
     }
 
     return (
@@ -38,7 +45,7 @@ const Navbar = () => {
                             <DropdownMenuItem onClick={handleLogoutClick}>
                                 LOGOUT
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleMyTrips}>
                                 MINHAS RESERVAS
                             </DropdownMenuItem>
                         </DropdownMenuContent>

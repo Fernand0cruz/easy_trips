@@ -72,9 +72,12 @@ const Confirmation = ({ params }: { params: { slug: string } }) => {
                 totalPaid: totalPrice,
             })
         })
+
         toast.success("Reserva realizada com sucesso!", {
             position: "bottom-center"
         })
+        
+        return router.push("/"); 
     }
 
 

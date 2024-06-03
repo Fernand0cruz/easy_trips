@@ -14,15 +14,15 @@ interface UserReservationItemProps {
 
 const UserReservationCard = ({ reservation }: UserReservationItemProps) => {
     return (
-        <Card className="p-2 md:flex">
+        <Card className="p-2 md:h-72 md:flex">
             <Image
                 width={500}
                 height={500}
                 src={reservation.trip.coverImage}
                 alt={reservation.trip.location}
-                className="rounded-lg w-full md:w-1/2 md:object-cover md:h-60"
+                className="rounded-lg w-full md:w-1/2 md:object-cover md:h-[269px]"
             />
-            <div className="mt-5 md:w-1/2 p-3">
+            <div className="mt-5 flex flex-col justify-center md:w-1/2 p-3">
                 <h2>Local: {reservation.trip.location}</h2>
                 <p>Data: {new Date(reservation.trip.startDate).toLocaleDateString()} - {new Date(reservation.trip.endDate).toLocaleDateString()}</p>
                 <p>Hóspedes: {reservation.guests}</p>

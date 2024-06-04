@@ -10,24 +10,24 @@ interface UserReservationItemProps {
         include: {
             trip: true
         }
-
     }>
+    fetchReservations: () => void;
 }
 
-const UserReservationCard = ({ reservation }: UserReservationItemProps) => {
-    const router = useRouter()
+const UserReservationCard = ({ reservation, fetchReservations }: UserReservationItemProps) => {
+    
     const handleClikDelete = async () => {
         const res = await fetch(`/api/trips/reservation/${reservation.id}`, {
             method: "DELETE"
         })
 
         if(!res.ok){
-            return toast.error("Ocorreu um error ao cancelar a reserva!")
+            return toast.error("Ocorreu um error ao cancelar a reserva!", {position: "bottom-center"})
         }
 
-        toast.success("Reserva cancelada com sucesso!")
+        toast.success("Reserva cancelada com sucesso!", {position: "bottom-center"})
 
-        router.refresh()
+        fetchReservations()
     } 
 
     return (

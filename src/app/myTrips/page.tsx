@@ -15,26 +15,24 @@ const MyTrips = () => {
     const { status, data } = useSession()
     const router = useRouter()
 
+    const fetchReservations = async () => {
+        const res = await fetch(`/api/user/${(data?.user as any)?.id}/reservations`)
+        const json = await res.json()
+        setReservations(json)
+    }
     useEffect(() => {
-        if (status === "unauthenticated" || !data?.user) {
+        if (status === "unauthenticated") {
             return router.push("/")
         }
-        const fetchReservations = async () => {
-            const res = await fetch(`/api/user/${(data?.user as any)?.id}/reservations`)
-            const json = await res.json()
-            setReservations(json)
-        }
         fetchReservations()
-
     }, [status])
-    console.log(reservations)
     return (
         <div className="flex flex-col m-auto max-w-7xl">
             <h1 className="my-5">Minhas Viagens</h1>
             <div className="flex flex-col gap-3 md:grid md:grid-cols-2">
                 {reservations.length > 0 ? (
                     reservations.map((reservation) => (
-                        <UserReservationCard key={reservation.id} reservation={reservation} />
+                        <UserReservationCard key={reservation.id} reservation={reservation} fetchReservations={fetchReservations} />
                     ))
                 ) : (
                     <h2>Você ainda não fez nenhuma reserva!</h2>

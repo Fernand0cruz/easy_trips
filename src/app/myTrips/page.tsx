@@ -20,7 +20,7 @@ const MyTrips = () => {
             return router.push("/")
         }
         const fetchReservations = async () => {
-            const res = await fetch(`/api/trips/user/${(data?.user as any)?.id}/reservations`)
+            const res = await fetch(`/api/user/${(data?.user as any)?.id}/reservations`)
             const json = await res.json()
             setReservations(json)
         }
@@ -32,7 +32,13 @@ const MyTrips = () => {
         <div className="flex flex-col m-auto max-w-7xl">
             <h1 className="my-5">Minhas Viagens</h1>
             <div className="flex flex-col gap-3 md:grid md:grid-cols-2">
-                {reservations.map((reservation) => <UserReservationCard reservation={reservation} key={reservation.id} />)}
+                {reservations.length > 0 ? (
+                    reservations.map((reservation) => (
+                        <UserReservationCard key={reservation.id} reservation={reservation} />
+                    ))
+                ) : (
+                    <h2>Você ainda não fez nenhuma reserva!</h2>
+                )}
             </div>
         </div>
     );

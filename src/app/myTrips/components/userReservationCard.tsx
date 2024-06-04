@@ -2,6 +2,8 @@ import { Card } from "@/components/ui/card";
 import { Prisma } from "@prisma/client";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 interface UserReservationItemProps {
     reservation: Prisma.ReservationsGetPayload<{
@@ -13,6 +15,21 @@ interface UserReservationItemProps {
 }
 
 const UserReservationCard = ({ reservation }: UserReservationItemProps) => {
+    const router = useRouter()
+    const handleClikDelete = async () => {
+        const res = await fetch(`/api/trips/reservation/${reservation.id}`, {
+            method: "DELETE"
+        })
+
+        if(!res.ok){
+            return toast.error("Ocorreu um error ao cancelar a reserva!")
+        }
+
+        toast.success("Reserva cancelada com sucesso!")
+
+        router.refresh()
+    } 
+
     return (
         <Card className="p-2 md:h-72 md:flex">
             <Image
@@ -33,7 +50,7 @@ const UserReservationCard = ({ reservation }: UserReservationItemProps) => {
                         <p>R$ {reservation.totalPaid.toFixed(2)}</p>
                     </div>
                 </div>
-                <Button className="flex w-full mt-5">Cancelar</Button>
+                <Button className="flex w-full mt-5" onClick={handleClikDelete}>Cancelar</Button>
             </div>
         </Card>
     );

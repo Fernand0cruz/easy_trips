@@ -1,6 +1,6 @@
 "use client"
 import { useSearchParams } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import { Trip } from "@prisma/client";
 import Header from "@/app/components/header";
 import Trips from "@/app/components/trips";
@@ -31,9 +31,11 @@ const SearchPage = () => {
         <div className="flex flex-col m-auto max-w-7xl">
             <Header />
             <h1 className="uppercase font-bold text-center my-5">Sua busca resultou em:</h1>
-            <div className="grid grid-cols-2 gap-3 md:grid md:grid-cols-4">
-                {trips.length > 0 ? <Trips data={trips} /> : <p>Viagem não encontrada!</p>}
-            </div>
+            <Suspense fallback={<p>Carregando...</p>}>
+                <div className="grid grid-cols-2 gap-3 md:grid md:grid-cols-4">
+                    {trips.length > 0 ? <Trips data={trips} /> : <p>Viagem não encontrada!</p>}
+                </div>
+            </Suspense>
         </div>
     );
 }

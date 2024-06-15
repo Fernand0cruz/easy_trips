@@ -15,9 +15,12 @@ import { format } from "date-fns";
 import  { useRouter } from "next/navigation" 
 
 const formSchema = z.object({
-    location: z.string(),
+    text: z.string().nonempty({
+        message: "Insira um local de viagem."
+    }),
     date: z.date().nullable()
 });
+
 
 const Header = () => {
     const [date, setDate] = useState<string | number | Date | undefined>(undefined);
@@ -26,15 +29,22 @@ const Header = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            location: "",
+            text: "",
             date: null,
         },
     });
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        const formattedDate = date ? format(date, "yyyy-MM-dd") : null;
-        router.push(`/trip/search?location=${values.location}&date=${formattedDate}`);
+        let formattedDate = '';
+        if (values.date instanceof Date) {
+            const midnightDate = new Date(values.date);
+            midnightDate.setUTCHours(0, 0, 0, 0);
+            formattedDate = midnightDate.toISOString();
+        }
+        router.push(`/trip/search?location=${values.text}&date=${formattedDate}`);
     }
+    
+    
 
     return (
         <header className="bg-[url('/traveler_banner.jpg')] w-full mx-auto bg-cover bg-center bg-no-repeat px-5 py-32">
@@ -44,7 +54,7 @@ const Header = () => {
                     <div className="flex flex-col justify-center gap-3 md:flex-row">
                         <FormField
                             control={form.control}
-                            name="location"
+                            name="text"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
@@ -55,7 +65,7 @@ const Header = () => {
                                             className="w-[280px]"
                                         />
                                     </FormControl>
-                                    <FormMessage>{form.formState.errors.location?.message}</FormMessage>
+                                    <FormMessage>{form.formState.errors.text?.message}</FormMessage>
                                 </FormItem>
                             )}
                         />

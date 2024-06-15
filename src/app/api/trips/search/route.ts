@@ -1,7 +1,7 @@
 import { prismaClient } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-const generatedQuery = (text?: string) => {
+const generatedQuery = (text: string, date: string | null) => {
     let searchQuery: any = {
         OR: [
             {
@@ -21,8 +21,28 @@ const generatedQuery = (text?: string) => {
                     has: text,
                 }
             }
-        ]
+        ],
+        AND: [],
     };
+
+    if (date) {
+        const formattedDate = new Date(date);
+        formattedDate.setUTCHours(0, 0, 0, 0);
+
+        searchQuery.AND = [
+            {
+                startDate: {
+                    lte: formattedDate.toISOString() 
+                }
+            },
+            {
+                endDate: {
+                    gt: formattedDate.toISOString()
+                }
+            }
+        ];
+    }
+
     return searchQuery;
 }
 
@@ -36,8 +56,10 @@ export async function GET(request: Request) {
         }), { status: 400 });
     }
 
+    const date = searchParams.get("date");
+
     const trips = await prismaClient.trip.findMany({
-        where: generatedQuery(text)
+        where: generatedQuery(text, date)
     });
 
     return new NextResponse(JSON.stringify(trips), { status: 200 });

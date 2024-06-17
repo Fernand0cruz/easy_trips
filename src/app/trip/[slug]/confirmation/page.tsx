@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import TripImagens from "../components/trip-images";
 import { useSession } from "next-auth/react";
-import { toast } from "react-toastify";
+import { useToast } from "@/components/ui/use-toast";
 
 const Confirmation = ({ params }: { params: { slug: string } }) => {
     const [trip, setTrip] = useState<Trip | null>(null);
@@ -18,6 +18,8 @@ const Confirmation = ({ params }: { params: { slug: string } }) => {
     const router = useRouter();
 
     const { status, data } = useSession()
+
+    const { toast } = useToast()
 
     useEffect(() => {
         const fetchTrip = async () => {
@@ -72,11 +74,9 @@ const Confirmation = ({ params }: { params: { slug: string } }) => {
                 totalPaid: totalPrice,
             })
         })
-
-        toast.success("Reserva realizada com sucesso!", {
-            position: "bottom-center"
-        })
-        
+        toast({
+            title: "Reserva realizada com sucesso!",
+          })
         return router.push("/"); 
     }
 

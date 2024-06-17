@@ -20,6 +20,7 @@
     "@radix-ui/react-popover": "^1.0.7",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-toast": "^1.1.5",
+    "@stripe/stripe-js": "^3.5.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "data-fns": "^1.1.0",
@@ -33,6 +34,7 @@
     "react-day-picker": "^8.10.1",
     "react-dom": "^18",
     "react-hook-form": "^7.21.0",
+    "stripe": "^15.11.0",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"

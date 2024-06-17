@@ -8,82 +8,95 @@ import { Button } from "@/components/ui/button";
 import TripImagens from "../components/trip-images";
 import { useSession } from "next-auth/react";
 import { useToast } from "@/components/ui/use-toast";
+import { loadStripe } from "@stripe/stripe-js";
 
 const Confirmation = ({ params }: { params: { slug: string } }) => {
     const [trip, setTrip] = useState<Trip | null>(null);
     const [totalPrice, setTotalPrice] = useState<number | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const searchParams = useSearchParams();
-
     const router = useRouter();
-
-    const { status, data } = useSession()
-
-    const { toast } = useToast()
+    const { status } = useSession();
+    const { toast } = useToast();
 
     useEffect(() => {
         const fetchTrip = async () => {
-            const response = await fetch("/api/trips/check", {
-                method: "POST",
-                body: JSON.stringify({
-                    tripId: params.slug,
-                    startDate: searchParams.get("startDate"),
-                    endDate: searchParams.get("endDate"),
-                })
-            });
+            try {
+                const response = await fetch("/api/trips/check", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        tripId: params.slug,
+                        startDate: searchParams.get("startDate"),
+                        endDate: searchParams.get("endDate"),
+                    }),
+                });
 
-            const res = await response.json();
+                const res = await response.json();
 
-            if(res.error) {
-                return router.push("/");
+                if (res.error) {
+                    return router.push("/");
+                }
+
+                setTrip(res.trip);
+                setTotalPrice(res.totalPrice);
+            } catch (error) {
+                console.error("Failed to fetch trip:", error);
+                router.push("/");
+            } finally {
+                setLoading(false);
             }
-
-            setTrip(res.trip);
-            setTotalPrice(res.totalPrice);
-
-            setLoading(false);
         };
 
         if (status === "unauthenticated") {
             router.push("/api/auth/signin");
+        } else if (status === "authenticated") {
+            fetchTrip();
         }
-
-        if (status === "authenticated") {
-            const startDate = searchParams.get("startDate");
-            const endDate = searchParams.get("endDate");
-            const guest = searchParams.get("guest") || 1; // Assuming guest param is in searchParams or default to 1
-            router.push(`/trip/${params.slug}/confirmation?startDate=${startDate}&endDate=${endDate}&guest=${guest}`);
-        }
-
-        fetchTrip();
-    }, [params.slug, searchParams, status]);
-
+    }, [params.slug, searchParams, status, router]);
 
     if (loading) return <p className="text-center m-5">Loading...</p>;
     if (!trip) return <p>No trip found</p>;
 
     const handleBuyClick = async () => {
-        await fetch("/api/trips/reservation", {
+        const res = await fetch("/api/payment", {
             method: "POST",
-            body: JSON.stringify({
-                tripsId: params.slug,
-                startDate: searchParams.get("startDate"),
-                endDate: searchParams.get("endDate"),
-                guests: Number(searchParams.get("guest")),
-                userId: (data?.user as any)?.id,
-                totalPaid: totalPrice,
-            })
-        })
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: Buffer.from(
+                JSON.stringify({
+                    tripsId: params.slug,
+                    totalPrice,
+                    location: String(trip.location),
+                    description: trip.description,
+                    coverImage: trip.coverImage,
+                    startDate: searchParams.get("startDate"),
+                    endDate: searchParams.get("endDate"),
+                    maxGuests: Number(searchParams.get("guest")),
+                }),
+            )
+        });
+
+        if (!res.ok) {
+            toast({
+                title: "Ocorreu um erro ao realizar a reserva!",
+            });
+        }
+
+        const { sessionId } = await res.json();
+      
+        const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY as string);
+
+        await stripe?.redirectToCheckout({ sessionId });
+
         toast({
             title: "Reserva realizada com sucesso!",
-          })
-        return router.push("/"); 
-    }
-
+        });
+    };
 
     const startDate = new Date(searchParams.get("startDate") as string);
-    const endDate = new Date(searchParams.get("endDate") as string)
-    const guests = searchParams.get("guest")
+    const endDate = new Date(searchParams.get("endDate") as string);
+    const guests = searchParams.get("guest");
 
     return (
         <Card className="mt-10 flex flex-col m-auto my-5 max-w-7xl p-2">
@@ -95,15 +108,14 @@ const Confirmation = ({ params }: { params: { slug: string } }) => {
                     <p>Local: {trip.location}</p>
                     <h3>Preço total: R$<span>{totalPrice?.toFixed(2)}</span></h3>
                     <div className="flex gap-2">
-                        <p> De: {startDate.toLocaleDateString()}</p>
-                        -
+                        <p>De: {startDate.toLocaleDateString()}</p>-
                         <p>Até: {endDate.toLocaleDateString()}</p>
                     </div>
                     <div className="flex gap-2">
                         <span>Hóspedes:</span>
                         <p>{guests}</p>
                     </div>
-                    <Button onClick={handleBuyClick} className="flex w-full mt-5">Finalizar Compra</Button>
+                    <Button onClick={handleBuyClick} className="flex w-full mt-5">Finalizar Reserva</Button>
                 </div>
             </div>
         </Card>

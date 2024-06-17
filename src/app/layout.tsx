@@ -30,10 +30,14 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
+            <div className="flex flex-col h-screen">
               <Navbar />
-              {children}
+              <div className="flex-1">
+                {children}
+              </div>
               <Toaster />
               <Footer />
+            </div>
           </AuthProvider>
         </ThemeProvider>
       </body>

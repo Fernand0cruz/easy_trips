@@ -14,7 +14,7 @@ const Trips = ({ data }: TripsProps) => {
                 data.map((trip: any) => (
                     <Card  key={trip.id} className="hover:bg-accent p-2">
                         <Link href={"/trip/" + trip.id}>
-                            <div className="w-full h-60 flex rounded-md">
+                            <div className="w-full h-60 flex rounded-md mb-2">
                                 <Image src={trip.coverImage} alt={trip.location} width={300} height={200}
                                     className="w-full h-full object-cover rounded-md"
                                 />

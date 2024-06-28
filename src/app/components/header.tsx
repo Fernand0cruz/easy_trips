@@ -2,13 +2,23 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormItem, FormField, FormMessage } from "@/components/ui/form";
+import { 
+    Form, 
+    FormControl, 
+    FormItem, 
+    FormField, 
+    FormMessage 
+} from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { 
+    Popover, 
+    PopoverContent, 
+    PopoverTrigger 
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
@@ -21,9 +31,8 @@ const formSchema = z.object({
     date: z.date().nullable()
 });
 
-
 const Header = () => {
-    const [date, setDate] = useState<string | number | Date | undefined>(undefined);
+    const [date, setDate] = useState<Date | undefined>(undefined);
     const router = useRouter();
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -35,17 +44,13 @@ const Header = () => {
     });
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        let formattedDate = '';
-        if (values.date instanceof Date) {
-            const midnightDate = new Date(values.date);
-            midnightDate.setUTCHours(0, 0, 0, 0);
-            formattedDate = midnightDate.toISOString();
-        }
+        const formattedDate = values.date ? new Date(values.date).toISOString() : '';
         router.push(`/trip/search?location=${values.text}&date=${formattedDate}`);
-    }
-    
-    
+    };
 
+    const minDate = new Date();
+    minDate.setHours(0, 0, 0, 0);
+    
     return (
         <header className="bg-[url('/traveler_banner.jpg')] w-full mx-auto bg-cover bg-center bg-no-repeat px-5 py-32">
             <Form {...form}>
@@ -62,7 +67,7 @@ const Header = () => {
                                             {...field}
                                             type="text"
                                             placeholder="Onde você quer ir?"
-                                            className="w-[280px]"
+                                            className="md:w-[300px]"
                                         />
                                     </FormControl>
                                     <FormMessage>{form.formState.errors.text?.message}</FormMessage>
@@ -80,7 +85,7 @@ const Header = () => {
                                                 <Button
                                                     variant={"outline"}
                                                     className={cn(
-                                                        "w-[280px] justify-start text-left font-normal hover:bg-[none]",
+                                                        "w-[100%] justify-start text-left font-normal hover:bg-[none]",
                                                         !date && "text-muted-foreground"
                                                     )}
                                                 >
@@ -88,7 +93,7 @@ const Header = () => {
                                                     {date ? format(date, "LLL dd, y") : <span>Selecione uma data</span>}
                                                 </Button>
                                             </PopoverTrigger>
-                                            <PopoverContent className="w-auto p-0">
+                                            <PopoverContent className="w-auto">
                                                 <Calendar
                                                     mode="single"
                                                     selected={date as Date | undefined}
@@ -97,6 +102,7 @@ const Header = () => {
                                                         field.onChange(date);
                                                     }}
                                                     initialFocus
+                                                    disabled={(date) => date < minDate}
                                                 />
                                             </PopoverContent>
                                         </Popover>

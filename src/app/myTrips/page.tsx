@@ -27,9 +27,9 @@ const MyTrips = () => {
         fetchReservations()
     }, [status])
     return (
-        <div className="flex flex-col m-auto max-w-7xl">
-            <h1 className="my-5">Minhas Viagens</h1>
-            <div className="flex flex-col gap-3 md:grid md:grid-cols-2">
+        <div className="flex flex-col m-auto max-w-screen-xl gap-5 mt-5">
+            <h1 className="uppercase font-bold text-center">Minhas Viagens</h1>
+            <div className="flex flex-col gap-2 md:grid md:grid-cols-2">
                 {reservations.length > 0 ? (
                     reservations.map((reservation) => (
                         <UserReservationCard key={reservation.id} reservation={reservation} fetchReservations={fetchReservations} />

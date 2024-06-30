@@ -2,7 +2,6 @@ import { Card } from "@/components/ui/card";
 import { Prisma } from "@prisma/client";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 
 interface UserReservationItemProps {
@@ -45,20 +44,21 @@ const UserReservationCard = ({ reservation, fetchReservations }: UserReservation
                 alt={reservation.trip.location}
                 className="rounded-lg w-full md:w-1/2 md:object-cover md:h-[269px]"
             />
-            <div className="mt-5 flex flex-col justify-center md:w-1/2 p-3">
+            <div className="flex flex-col justify-center md:w-1/2 p-2">
                 <h2>Local: {reservation.trip.location}</h2>
                 <p>Data: {new Date(reservation.trip.startDate).toLocaleDateString()} - {new Date(reservation.trip.endDate).toLocaleDateString()}</p>
                 <p>Hóspedes: {reservation.guests}</p>
-                <div className="border-t-2 pt-3 mt-3">
+                <div className="border-t-2 pt-2 mt-2">
                     informaçoes de preço:
                     <div className="flex justify-between">
                         <p>Total: </p>
                         <p>R$ {reservation.totalPaid.toFixed(2)}</p>
                     </div>
                 </div>
-                <Button className="flex w-full mt-5" onClick={handleClikDelete}>Cancelar</Button>
+                <Button className="flex w-full mt-2" onClick={handleClikDelete}>Cancelar</Button>
             </div>
         </Card>
     );
 }
+
 export default UserReservationCard;

@@ -15,7 +15,7 @@ interface TripsInfsProps {
 
 const TripsInfs = ({ description, highlights, category, pricePerDay, endDate, startDate, maxGuests, tripId }: TripsInfsProps) => {
     return (
-        <div className="my-5 flex flex-col gap-3 md:flex-row">
+        <div className="flex flex-col gap-2 md:flex-row">
             <div className="flex flex-col gap-5 md:w-2/3">
                 <div>
                     <h1 className="uppercase font-bold">Sobre a viagem:</h1>

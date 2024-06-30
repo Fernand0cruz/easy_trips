@@ -1,4 +1,5 @@
 "use client"
+
 import { useState } from "react";
 import Image from "next/image";
 
@@ -12,6 +13,7 @@ const TripImagens = ({ imageUrls, coverImage }: TripImagensProps) => {
     const handleImageClick = (imageUrl: string) => {
         setCurrentImage(imageUrl)
     }
+
     return (
         <div className="w-full flex flex-col gap-2 md:flex-row">
             <Image

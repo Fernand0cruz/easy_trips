@@ -54,8 +54,8 @@ const Confirmation = ({ params }: { params: { slug: string } }) => {
         }
     }, [params.slug, searchParams, status, router]);
 
-    if (loading) return <p className="text-center m-5">Loading...</p>;
-    if (!trip) return <p>No trip found</p>;
+    if (loading) return <p className="text-center m-5">Carregando...</p>;
+    if (!trip) return <p>Viagem não encontrada</p>;
 
     const handleBuyClick = async () => {
         const res = await fetch("/api/payment", {
@@ -84,7 +84,7 @@ const Confirmation = ({ params }: { params: { slug: string } }) => {
         }
 
         const { sessionId } = await res.json();
-      
+
         const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY as string);
 
         await stripe?.redirectToCheckout({ sessionId });
@@ -99,14 +99,14 @@ const Confirmation = ({ params }: { params: { slug: string } }) => {
     const guests = searchParams.get("guest");
 
     return (
-        <Card className="mt-10 flex flex-col m-auto my-5 max-w-7xl p-2">
+        <Card className="flex flex-col m-auto mt-5 max-w-screen-xl p-2 gap-2">
             <h1 className="font-semibold text-xl">Sua viagem para: {trip.location}</h1>
-            <div className="flex flex-col gap-3 my-5">
+            <div className="flex flex-col gap-2">
                 <TripImagens imageUrls={trip.imagesUrl} coverImage={trip.coverImage} />
                 <div>
                     <h1 className="font-semibold text-xl">Informações sobre a viagem:</h1>
                     <p>Local: {trip.location}</p>
-                    <h3>Preço total: R$<span>{totalPrice?.toFixed(2)}</span></h3>
+                    <h3>Preço total: R$ {totalPrice?.toFixed(2)}</h3>
                     <div className="flex gap-2">
                         <p>De: {startDate.toLocaleDateString()}</p>-
                         <p>Até: {endDate.toLocaleDateString()}</p>
@@ -115,8 +115,8 @@ const Confirmation = ({ params }: { params: { slug: string } }) => {
                         <span>Hóspedes:</span>
                         <p>{guests}</p>
                     </div>
-                    <Button onClick={handleBuyClick} className="flex w-full mt-5">Finalizar Reserva</Button>
                 </div>
+                <Button onClick={handleBuyClick} className="flex w-full">Finalizar Reserva</Button>
             </div>
         </Card>
     );

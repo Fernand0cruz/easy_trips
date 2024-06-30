@@ -13,10 +13,12 @@ const Trips = async ({ params }: any) => {
             category: true
         }
     })
+    
     if (!trips) return null
+
     return (
-        <Card className="mt-10 flex flex-col m-auto my-5 max-w-7xl p-2">
-            <TripHeader location={trips.location} maxGuests={trips.maxGuests}/>
+        <Card className="flex flex-col m-auto mt-5 gap-5 max-w-screen-xl p-5">
+            <TripHeader location={trips.location}/>
             <TripImagens imageUrls={trips.imagesUrl} coverImage={trips.coverImage} />
             <TripsInfs 
                 description={trips.description} 

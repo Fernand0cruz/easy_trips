@@ -1,14 +1,30 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { 
+    useState, 
+    useMemo 
+} from "react";
 import { Button } from "@/components/ui/button";
 import { DatePickerWithRange } from "@/components/ui/datePickerWithRanger";
-import { Form, FormField, FormItem, FormMessage, FormControl, FormLabel } from "@/components/ui/form";
+import { 
+    Form, 
+    FormField, 
+    FormItem, 
+    FormMessage, 
+    FormControl, 
+    FormLabel 
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, Controller } from "react-hook-form";
+import { 
+    useForm, 
+    Controller 
+} from "react-hook-form";
 import { z } from "zod";
-import { addDays, differenceInDays } from "date-fns";
+import { 
+    addDays, 
+    differenceInDays 
+} from "date-fns";
 import { useRouter } from "next/navigation";
 
 interface TripReservationProps {
@@ -142,7 +158,6 @@ const onSubmit = async (data: z.infer<typeof TripReservationSchema>) => {
                         </FormItem>
                     )}
                 />
-
                 <div className="flex justify-between">
                     <p>{totalDays} Dia(s)</p>
                     <p>Preço: R$ {totalPrice.toFixed(2)}</p>

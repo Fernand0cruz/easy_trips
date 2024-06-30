@@ -9,10 +9,11 @@ const Category = async ({params}: any) => {
             }
         },
     })
+
     return ( 
-        <div className="mt-10 flex flex-col m-auto max-w-7xl">
-            <h1 className="uppercase font-bold text-center">Buscando por {params.slug}?</h1>
-            <div className="mt-5 grid grid-cols-2 gap-3 md:grid md:grid-cols-4 md:gap-3">
+        <div className="mt-5 gap-5 flex flex-col m-auto max-w-screen-xl">
+            <h1 className="uppercase font-bold text-center">Resultados da busca por {params.slug}</h1>
+            <div className="grid grid-cols-2 gap-3 md:grid md:grid-cols-4 md:gap-3">
                 <Trips data={trips}/>
             </div>
         </div>

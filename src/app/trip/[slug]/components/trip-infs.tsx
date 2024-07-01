@@ -7,13 +7,11 @@ interface TripsInfsProps {
     highlights: string[];
     category: string;
     pricePerDay: number;
-    startDate: Date | number | null;
-    endDate: Date | number | null;
     maxGuests: number;
     tripId: string
 }
 
-const TripsInfs = ({ description, highlights, category, pricePerDay, endDate, startDate, maxGuests, tripId }: TripsInfsProps) => {
+const TripsInfs = ({ description, highlights, category, pricePerDay, maxGuests, tripId }: TripsInfsProps) => {
     return (
         <div className="flex flex-col gap-2 md:flex-row">
             <div className="flex flex-col gap-5 md:w-2/3">

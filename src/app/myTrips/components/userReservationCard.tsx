@@ -46,10 +46,10 @@ const UserReservationCard = ({ reservation, fetchReservations }: UserReservation
             />
             <div className="flex flex-col justify-center md:w-1/2 p-2">
                 <h2>Local: {reservation.trip.location}</h2>
-                <p>Data: {new Date(reservation.trip.startDate).toLocaleDateString()} - {new Date(reservation.trip.endDate).toLocaleDateString()}</p>
+                <p>Data: {new Date(reservation.startDate).toLocaleDateString()} - {new Date(reservation.endDate).toLocaleDateString()}</p>
                 <p>Hóspedes: {reservation.guests}</p>
                 <div className="border-t-2 pt-2 mt-2">
-                    informaçoes de preço:
+                    informação de preço:
                     <div className="flex justify-between">
                         <p>Total: </p>
                         <p>R$ {reservation.totalPaid.toFixed(2)}</p>

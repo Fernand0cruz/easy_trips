@@ -24,8 +24,6 @@ const Trips = async ({ params }: any) => {
                 description={trips.description} 
                 highlights={trips.highlights} 
                 category={trips.category.name}
-                startDate={trips.startDate}
-                endDate={trips.endDate}
                 maxGuests={trips.maxGuests}
                 pricePerDay={trips.pricePerDay}
                 tripId={trips.id}

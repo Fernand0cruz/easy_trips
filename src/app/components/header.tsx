@@ -52,10 +52,12 @@ const Header = () => {
     minDate.setHours(0, 0, 0, 0);
     
     return (
-        <header className="bg-[url('/traveler_banner.jpg')] w-full mx-auto bg-cover bg-center bg-no-repeat px-5 py-32">
+        <header className="relative w-screen ml-[calc(50%-50vw)] px-5 py-40 overflow-hidden">
+            <div className="absolute inset-0 bg-[url('/traveler_banner.jpg')] bg-cover bg-center bg-no-repeat" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20" />
+            <h1 className="relative font-serif text-4xl md:text-5xl text-white text-center pb-10">Pronto para a sua próxima viagem?</h1>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="bg-secondary opacity-90 rounded-md px-5 py-10">
-                    <h1 className="text-4xl font-bold text-center pb-5">Pronto para a sua próxima viagem?</h1>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="relative bg-card border border-border rounded-sm shadow-lg px-5 py-8 max-w-3xl mx-auto">
                     <div className="flex flex-col justify-center gap-3 md:flex-row">
                         <FormField
                             control={form.control}

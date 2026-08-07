@@ -42,17 +42,16 @@ const UserReservationCard = ({ reservation, fetchReservations }: UserReservation
                 height={500}
                 src={reservation.trip.coverImage}
                 alt={reservation.trip.location}
-                className="rounded-lg w-full md:w-1/2 md:object-cover md:h-[269px]"
+                className="rounded-sm w-full md:w-1/2 md:object-cover md:h-[269px]"
             />
-            <div className="flex flex-col justify-center md:w-1/2 p-2">
-                <h2>Local: {reservation.trip.location}</h2>
-                <p>Data: {new Date(reservation.startDate).toLocaleDateString()} - {new Date(reservation.endDate).toLocaleDateString()}</p>
-                <p>Hóspedes: {reservation.guests}</p>
-                <div className="border-t-2 pt-2 mt-2">
-                    informação de preço:
+            <div className="flex flex-col justify-center md:w-1/2 p-4 gap-1">
+                <h2 className="font-serif text-xl">{reservation.trip.location}</h2>
+                <p className="text-sm text-muted-foreground">Data: {new Date(reservation.startDate).toLocaleDateString()} - {new Date(reservation.endDate).toLocaleDateString()}</p>
+                <p className="text-sm text-muted-foreground">Hóspedes: {reservation.guests}</p>
+                <div className="border-t border-border pt-2 mt-2">
                     <div className="flex justify-between">
-                        <p>Total: </p>
-                        <p>R$ {reservation.totalPaid.toFixed(2)}</p>
+                        <p className="text-sm text-muted-foreground">Total</p>
+                        <p className="text-gold font-medium">R$ {reservation.totalPaid.toFixed(2)}</p>
                     </div>
                 </div>
                 <Button className="flex w-full mt-2" onClick={handleClikDelete}>Cancelar</Button>

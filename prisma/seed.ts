@@ -2,332 +2,287 @@ const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
 
+interface CategorySeed {
+    name: string
+    slug: string
+    image: string
+    highlights: string[]
+    photoPool: string[]
+    entries: {
+        location: string
+        pricePerDay: number
+        maxGuests: number
+        description: string
+    }[]
+}
+
+const AVAILABILITY_START = new Date('2024-01-01')
+const AVAILABILITY_END = new Date('2026-12-31')
+
+// Cada foto abaixo é um ID verificado do CDN da Unsplash (images.unsplash.com),
+// checado individualmente antes de entrar aqui para garantir que carrega.
+const unsplash = (id: string, width = 960) => `https://images.unsplash.com/${id}?w=${width}&q=80`
+
+const categories: CategorySeed[] = [
+    {
+        name: 'Hotel',
+        slug: 'hotel',
+        image: '/hotel.png',
+        highlights: [
+            'Café da manhã incluso', 'Piscina', 'Academia', 'Estacionamento',
+            'Wi-fi', 'Ar condicionado', 'TV a cabo', 'Cama king size', 'Banheiro privativo',
+        ],
+        photoPool: [
+            'photo-1566073771259-6a8506099945', 'photo-1611892440504-42a792e24d32',
+            'photo-1618773928121-c32242e63f39', 'photo-1582719478250-c89cae4dc85b',
+            'photo-1590490360182-c33d57733427', 'photo-1551882547-ff40c63fe5fa',
+            'photo-1445019980597-93fa8acb246c', 'photo-1571896349842-33c89424de2d',
+        ],
+        entries: [
+            { location: 'Copacabana, Rio de Janeiro', pricePerDay: 420, maxGuests: 4, description: 'Hotel a poucos passos da praia de Copacabana, com serviço de quarto 24h e vista para o mar.' },
+            { location: 'Jurerê Internacional, Florianópolis', pricePerDay: 380, maxGuests: 3, description: 'Hospedagem sofisticada em Jurerê, próxima à badalada orla e aos melhores restaurantes da região.' },
+            { location: 'Vila Madalena, São Paulo', pricePerDay: 290, maxGuests: 2, description: 'Hotel boutique no coração da Vila Madalena, cercado por bares, galerias de arte e vida noturna.' },
+            { location: 'Ouro Preto, Minas Gerais', pricePerDay: 260, maxGuests: 4, description: 'Hotel histórico no centro de Ouro Preto, com arquitetura colonial preservada e vista para as igrejas barrocas.' },
+            { location: 'Ipanema, Rio de Janeiro', pricePerDay: 450, maxGuests: 4, description: 'Hotel a uma quadra da praia de Ipanema, com rooftop e vista para o Morro Dois Irmãos.' },
+            { location: 'Pampulha, Belo Horizonte', pricePerDay: 270, maxGuests: 3, description: 'Hotel à beira da Lagoa da Pampulha, próximo ao conjunto arquitetônico de Niemeyer.' },
+            { location: 'Centro Histórico, Salvador', pricePerDay: 300, maxGuests: 4, description: 'Hotel em casarão colonial no Pelourinho, cercado de música e cultura baiana.' },
+            { location: 'Vila Olímpia, São Paulo', pricePerDay: 340, maxGuests: 2, description: 'Hotel executivo na Vila Olímpia, a poucos minutos dos principais centros empresariais.' },
+        ],
+    },
+    {
+        name: 'Chalé',
+        slug: 'chale',
+        image: '/chale.png',
+        highlights: [
+            'Vista para o horizonte da cidade', 'Vista para o pátio', 'Cozinha', 'Wi-Fi',
+            'Estacionamento incluído', 'Piscina compartilhada', 'Permitido animais', 'TV', 'Pátio ou varanda',
+        ],
+        photoPool: [
+            'photo-1449158743715-0a90ebb6d2d8', 'photo-1449824913935-59a10b8d2000',
+            'photo-1518602164578-cd0074062767', 'photo-1587061949409-02df41d5e562',
+            'photo-1518733057094-95b53143d2a7', 'photo-1483086431886-3590a88317fe',
+            'photo-1601918774946-25832a4be0d6', 'photo-1544984243-ec57ea16fe25',
+        ],
+        entries: [
+            { location: 'Vale do Quilombo, Gramado', pricePerDay: 540, maxGuests: 4, description: 'Chalé aconchegante cercado por araucárias, a poucos minutos do centro de Gramado.' },
+            { location: 'Monte Verde, Camanducaia', pricePerDay: 460, maxGuests: 2, description: 'Refúgio na montanha com lareira, ideal para dias frios e caminhadas entre pinheiros.' },
+            { location: 'Visconde de Mauá, Resende', pricePerDay: 410, maxGuests: 3, description: 'Chalé de madeira à beira de um rio, cercado por cachoeiras e trilhas na Serra da Mantiqueira.' },
+            { location: 'Itaipava, Petrópolis', pricePerDay: 470, maxGuests: 2, description: 'Chalé rústico com varanda privativa e vista para o vale, a poucos minutos do centro de Petrópolis.' },
+            { location: 'São Francisco de Paula, Rio Grande do Sul', pricePerDay: 430, maxGuests: 4, description: 'Chalé entre araucárias centenárias, próximo à Floresta Nacional de São Francisco de Paula.' },
+            { location: 'Delfim Moreira, Minas Gerais', pricePerDay: 390, maxGuests: 3, description: 'Chalé de altitude na Serra da Mantiqueira, com vista para o Pico dos Marins.' },
+            { location: 'Urubici, Santa Catarina', pricePerDay: 450, maxGuests: 2, description: 'Chalé no ponto mais frio do Brasil, a poucos minutos do Morro da Igreja.' },
+            { location: 'Cambará do Sul, Rio Grande do Sul', pricePerDay: 480, maxGuests: 4, description: 'Chalé rústico próximo aos cânions do Aparados da Serra e Fortaleza.' },
+        ],
+    },
+    {
+        name: 'Fazenda',
+        slug: 'fazenda',
+        image: '/fazenda.png',
+        highlights: [
+            'Vista para as montanhas', 'Vista para o vale', 'Cozinha', 'Wi-Fi rápido (94 Mbps)',
+            'Espaço de trabalho exclusivo', 'Estacionamento incluído', 'Jacuzzi privativa', 'Permitido animais',
+        ],
+        photoPool: [
+            'photo-1500382017468-9049fed747ef', 'photo-1500595046743-cd271d694d30',
+            'photo-1500076656116-558758c991c1', 'photo-1500534623283-312aade485b7',
+            'photo-1516467508483-a7212febe31a', 'photo-1495107334309-fcf20504a5ab',
+            'photo-1500759285222-a95626b934cb', 'photo-1523348837708-15d4a09cfac2',
+            'photo-1601758228041-f3b2795255f1',
+        ],
+        entries: [
+            { location: 'Fazenda Boa Vista, Serra da Mantiqueira', pricePerDay: 650, maxGuests: 6, description: 'Fazenda histórica com cavalos, pomar e casarão colonial cercado de montanhas.' },
+            { location: 'Recanto do Cerrado, Pirenópolis', pricePerDay: 480, maxGuests: 5, description: 'Fazenda com cachoeiras próprias e trilhas ecológicas no coração de Goiás.' },
+            { location: 'Estância São Miguel, Bento Gonçalves', pricePerDay: 590, maxGuests: 4, description: 'Estância entre vinícolas na Serra Gaúcha, com café colonial servido na varanda.' },
+            { location: 'Refúgio da Serra, Cunha', pricePerDay: 520, maxGuests: 3, description: 'Fazenda de altitude cercada de mata atlântica, com clima ameno o ano todo.' },
+            { location: 'Fazenda Santa Clara, Socorro', pricePerDay: 460, maxGuests: 5, description: 'Fazenda com trilhas de arvorismo e rapel, próxima à capital brasileira dos esportes radicais.' },
+            { location: 'Sítio da Serra, Ibiúna', pricePerDay: 380, maxGuests: 4, description: 'Sítio cercado de mata, com horta orgânica e nascente própria a menos de 1h de São Paulo.' },
+            { location: 'Recanto Verde, São Roque', pricePerDay: 340, maxGuests: 3, description: 'Fazenda entre vinícolas paulistas, com colheita sazonal de uvas e passeios de charrete.' },
+            { location: 'Fazenda Águas Claras, Analândia', pricePerDay: 400, maxGuests: 6, description: 'Fazenda com cachoeiras e piscinas naturais na Serra de São Pedro.' },
+        ],
+    },
+    {
+        name: 'Resort',
+        slug: 'resort',
+        image: '/resort.png',
+        highlights: [
+            'Vista para o horizonte da cidade', 'Cozinha', 'Wi-Fi', 'Estacionamento incluído',
+            'Piscina compartilhada', 'Jacuzzi compartilhada', 'Sauna Compartilhada', 'TV de alta definição', 'Elevador',
+        ],
+        photoPool: [
+            'photo-1571003123894-1f0594d2b5d9', 'photo-1520250497591-112f2f40a3f4',
+            'photo-1519449556851-5720b33024e7', 'photo-1540202404-1b927e27fa8b',
+            'photo-1584132967334-10e028bd69f7', 'photo-1573052905904-34ad8c27f0cc',
+            'photo-1554366347-897a5113f6ab', 'photo-1610641818989-c2051b5e2cfd',
+        ],
+        entries: [
+            { location: 'Costa do Sauípe, Bahia', pricePerDay: 690, maxGuests: 6, description: 'Resort all-inclusive à beira-mar, com parques aquáticos e programação para toda a família.' },
+            { location: 'Beto Carrero Resort, Penha', pricePerDay: 520, maxGuests: 5, description: 'Resort ao lado do maior parque temático da América Latina, com acesso facilitado às atrações.' },
+            { location: 'Thermas dos Laranjais, Olímpia', pricePerDay: 340, maxGuests: 4, description: 'Resort com águas termais e acesso gratuito ao parque aquático mais visitado do Brasil.' },
+            { location: 'Privé Kalifórnia, Caldas Novas', pricePerDay: 310, maxGuests: 4, description: 'Resort com piscinas termais e área de lazer completa no maior polo de águas quentes do mundo.' },
+            { location: 'Iberostar Praia do Forte, Bahia', pricePerDay: 720, maxGuests: 6, description: 'Resort all-inclusive à beira-mar na Costa dos Coqueiros, com projeto de proteção às tartarugas marinhas.' },
+            { location: 'Vila Galé Eco Resort, Alagoas', pricePerDay: 580, maxGuests: 5, description: 'Resort ecológico cercado de coqueiros, a poucos passos das piscinas naturais de Maragogi.' },
+            { location: 'Enotel Resort, Porto de Galinhas', pricePerDay: 640, maxGuests: 4, description: 'Resort à beira-mar com acesso às piscinas naturais mais famosas do Nordeste.' },
+            { location: 'Malai Manso Resort, Chapada dos Guimarães', pricePerDay: 450, maxGuests: 6, description: 'Resort às margens da represa de Manso, com esportes aquáticos e trilhas na chapada.' },
+        ],
+    },
+    {
+        name: 'Apartamento',
+        slug: 'apartamento',
+        image: '/apartamento.png',
+        highlights: [
+            'Vista para as montanhas', 'Cozinha', 'Wi-Fi', 'Estacionamento incluído',
+            'Piscina compartilhada', 'Vista para o mar', 'Sauna Compartilhada', 'Elevador',
+        ],
+        photoPool: [
+            'photo-1502672260266-1c1ef2d93688', 'photo-1522708323590-d24dbb6b0267',
+            'photo-1493809842364-78817add7ffb', 'photo-1560448204-e02f11c3d0e2',
+            'photo-1484154218962-a197022b5858', 'photo-1560184897-ae75f418493e',
+            'photo-1502005229762-cf1b2da7c5d6', 'photo-1567767292278-a4f21aa2d36e',
+        ],
+        entries: [
+            { location: 'Moema, São Paulo', pricePerDay: 240, maxGuests: 3, description: 'Apartamento moderno próximo ao Parque Ibirapuera, com fácil acesso ao metrô.' },
+            { location: 'Boa Viagem, Recife', pricePerDay: 210, maxGuests: 4, description: 'Apartamento com vista para a praia de Boa Viagem, a poucos passos da orla.' },
+            { location: 'Asa Sul, Brasília', pricePerDay: 190, maxGuests: 2, description: 'Apartamento bem localizado na Asa Sul, próximo a restaurantes e parques da capital.' },
+            { location: 'Batel, Curitiba', pricePerDay: 220, maxGuests: 3, description: 'Apartamento no bairro Batel, região mais charmosa e arborizada de Curitiba.' },
+            { location: 'Leblon, Rio de Janeiro', pricePerDay: 380, maxGuests: 4, description: 'Apartamento a poucos metros da praia do Leblon, no bairro mais valorizado do Rio.' },
+            { location: 'Setor Bueno, Goiânia', pricePerDay: 180, maxGuests: 3, description: 'Apartamento moderno no Setor Bueno, cercado de restaurantes e vida noturna.' },
+            { location: 'Meireles, Fortaleza', pricePerDay: 230, maxGuests: 4, description: 'Apartamento na orla de Fortaleza, a poucos passos da praia de Iracema.' },
+            { location: 'Cidade Baixa, Porto Alegre', pricePerDay: 170, maxGuests: 2, description: 'Apartamento no boêmio bairro Cidade Baixa, cercado de bares e casas de shows.' },
+        ],
+    },
+    {
+        name: 'Motel',
+        slug: 'motel',
+        image: '/motel.png',
+        highlights: [
+            'Ar-Condicionado', 'Canais Eróticos', 'CD Player', 'Estacionamento', 'Wi-fi', 'Frigobar',
+        ],
+        photoPool: [
+            'photo-1595576508898-0ad5c879a061', 'photo-1522798514-97ceb8c4f1c8',
+            'photo-1560185893-a55cbc8c57e8', 'photo-1631049307264-da0ec9d70304',
+            'photo-1611048267451-e6ed903d4a38', 'photo-1595846519845-68e298c2edd8',
+            'photo-1618219944342-824e40a13285', 'photo-1600566752355-35792bedcfea',
+        ],
+        entries: [
+            { location: 'Sonho Meu, São Paulo', pricePerDay: 130, maxGuests: 2, description: 'Suíte temática com hidromassagem e menu de conveniência 24h.' },
+            { location: 'Status, Curitiba', pricePerDay: 160, maxGuests: 2, description: 'Suíte climatizada com garagem privativa e check-in discreto.' },
+            { location: 'Sensacional, Porto Alegre', pricePerDay: 140, maxGuests: 2, description: 'Suíte com decoração especial e closet espelhado.' },
+            { location: 'Paradiso, Salvador', pricePerDay: 155, maxGuests: 2, description: 'Suíte com piscina privativa e vista panorâmica da cidade.' },
+            { location: 'Prazer, Rio de Janeiro', pricePerDay: 145, maxGuests: 2, description: 'Suíte com hidromassagem e garagem individual com acesso direto ao quarto.' },
+            { location: 'Class, Fortaleza', pricePerDay: 135, maxGuests: 2, description: 'Suíte climatizada com cardápio de conveniência e som ambiente.' },
+            { location: 'Ilusion, Recife', pricePerDay: 150, maxGuests: 2, description: 'Suíte temática com banheira de hidromassagem e iluminação especial.' },
+            { location: 'Elegance, Brasília', pricePerDay: 165, maxGuests: 2, description: 'Suíte sofisticada com closet espelhado e sistema de som próprio.' },
+        ],
+    },
+    {
+        name: 'Flat',
+        slug: 'flat',
+        image: '/flat.png',
+        highlights: [
+            'Tranca na porta do quarto', 'Cozinha', 'Wi-Fi', 'Espaço de trabalho exclusivo',
+            'Estacionamento incluído', 'TV de 46 polegadas', 'Máquina de lavar', 'Secadora',
+        ],
+        photoPool: [
+            'photo-1502672023488-70e25813eb80', 'photo-1512918728675-ed5a9ecdebfd',
+            'photo-1493663284031-b7e3aefcae8e', 'photo-1554995207-c18c203602cb',
+            'photo-1616486338812-3dadae4b4ace', 'photo-1522771739844-6a9f6d5f14af',
+            'photo-1600607687920-4e2a09cf159d', 'photo-1591088398332-8a7791972843',
+        ],
+        entries: [
+            { location: 'Studio Pinheiros, São Paulo', pricePerDay: 180, maxGuests: 1, description: 'Studio compacto e funcional, a poucos metros do metrô Faria Lima.' },
+            { location: 'Flat Frei Caneca, São Paulo', pricePerDay: 210, maxGuests: 2, description: 'Flat completo próximo ao shopping Frei Caneca, com portaria 24h.' },
+            { location: 'Studio Savassi, Belo Horizonte', pricePerDay: 170, maxGuests: 1, description: 'Studio no coração da Savassi, cercado de bares e restaurantes.' },
+            { location: 'Loft Setor Sul, Goiânia', pricePerDay: 160, maxGuests: 2, description: 'Loft moderno no Setor Sul, próximo aos principais parques da cidade.' },
+            { location: 'Flat Jardins, São Paulo', pricePerDay: 230, maxGuests: 2, description: 'Flat completo nos Jardins, cercado de grifes e restaurantes renomados.' },
+            { location: 'Studio Meireles, Fortaleza', pricePerDay: 175, maxGuests: 1, description: 'Studio a poucos passos da orla de Fortaleza, com portaria 24h.' },
+            { location: 'Flat Copacabana, Rio de Janeiro', pricePerDay: 250, maxGuests: 2, description: 'Flat com vista parcial para o mar, a uma quadra da praia de Copacabana.' },
+            { location: 'Loft Água Verde, Curitiba', pricePerDay: 165, maxGuests: 2, description: 'Loft moderno no bairro Água Verde, próximo ao Parque Barigui.' },
+        ],
+    },
+    {
+        name: 'Pousada',
+        slug: 'pousada',
+        image: '/pousada.png',
+        highlights: [
+            'Vista para o jardim', 'Wi-Fi', 'Estacionamento incluído', 'TV',
+            'Pátio ou varanda', 'Quintal', 'É permitido deixar as malas',
+        ],
+        photoPool: [
+            'photo-1505692952047-1a78307da8f2', 'photo-1521783988139-89397d761dce',
+            'photo-1595877244574-e90ce41ce089', 'photo-1600585154340-be6161a56a0c',
+            'photo-1568495248636-6432b97bd949', 'photo-1615529182904-14819c35db37',
+            'photo-1499696010180-025ef6e1a8f9', 'photo-1522156373667-4c7234bbd804',
+            'photo-1544161515-4ab6ce6db874',
+        ],
+        entries: [
+            { location: 'Pousada do Rosário, Ouro Preto', pricePerDay: 175, maxGuests: 3, description: 'Pousada colonial no centro histórico, a poucos passos das principais igrejas.' },
+            { location: 'Recanto da Serra, Monte Verde', pricePerDay: 165, maxGuests: 2, description: 'Pousada aconchegante com lareira e café da manhã caseiro na Serra da Mantiqueira.' },
+            { location: 'Vila do Mar, Búzios', pricePerDay: 220, maxGuests: 4, description: 'Pousada charmosa a poucos metros da Rua das Pedras, no coração de Búzios.' },
+            { location: 'Chão de Estrelas, Lençóis', pricePerDay: 190, maxGuests: 3, description: 'Pousada rústica na porta de entrada da Chapada Diamantina, cercada de trilhas.' },
+            { location: 'Pousada Arraial d\'Ajuda, Bahia', pricePerDay: 210, maxGuests: 3, description: 'Pousada em meio à vegetação nativa, a poucos minutos das falésias de Arraial d\'Ajuda.' },
+            { location: 'Recanto das Águas, Bonito', pricePerDay: 195, maxGuests: 4, description: 'Pousada próxima aos rios de águas cristalinas, base ideal para o ecoturismo em Bonito.' },
+            { location: 'Pousada Vila Serrana, São Bento do Sapucaí', pricePerDay: 180, maxGuests: 2, description: 'Pousada de montanha com vista para o Pico do Itapeva, na Serra da Mantiqueira.' },
+            { location: 'Refúgio do Sol, Jericoacoara', pricePerDay: 240, maxGuests: 3, description: 'Pousada rústica-chique entre dunas, a poucos passos da Praia de Jericoacoara.' },
+        ],
+    },
+]
+
 async function main() {
     try {
+        for (const category of categories) {
+            let tripCategory = await prisma.tripCategory.findFirst({
+                where: { slug: category.slug },
+            })
 
+            if (!tripCategory) {
+                tripCategory = await prisma.tripCategory.create({
+                    data: {
+                        name: category.name,
+                        slug: category.slug,
+                        image: category.image,
+                    },
+                })
+            }
 
-        const hotelCategory = await prisma.tripCategory.create({
-            data: {
-                name: 'Hotel',
-                slug: 'hotel',
-                image: "/hotel.png"
-            }
-        })
-        const hotel = [
-            {
-                categoryId: hotelCategory.id,
-                location: "Barra da Tijuca, Rio de Janeiro",
-                slug: hotelCategory.slug + '_barra-da-tijuca-rio-de-janeiro',
-                pricePerDay: 350,
-                description: "O hotel é um dos mais luxuosos da região, com uma vista incrível para a praia da Barra da Tijuca.",
-                coverImage: "https://a0.muscache.com/im/pictures/213f32bf-d4a3-4f21-8705-ee7a12a39ac0.jpg?im_w=960",
-                imagesUrl: [
-                    "https://a0.muscache.com/im/pictures/70da20ac-66c7-428f-8770-3ba2bb5f6230.jpg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/6dcd8885-12a8-4ed8-946e-6f88df3395eb.jpg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/77a0ba62-031e-4834-8cf4-0afa177d7f74.jpg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/9de84213-9e24-47b5-b7f9-7012432044c5.jpg?im_w=720",
-                ],
-                highlights: [
-                    "Café da manhã incluso",
-                    "Piscina",
-                    "Academia",
-                    "Estacionamento",
-                    "Wi-fi",
-                    "Ar condicionado",
-                    "TV a cabo",
-                    "Cama king size",
-                    "Banheiro privativo",
-                ],
-                maxGuests: 4,
-            }
-        ]
-        await prisma.trip.createMany({
-            data: hotel,
-        })
+            const existing = await prisma.trip.findMany({
+                where: { categoryId: tripCategory.id },
+                select: { location: true },
+            })
+            const existingLocations = new Set(existing.map((t: any) => t.location))
 
+            const newEntries = category.entries
+                .map((entry, index) => ({ entry, index }))
+                .filter(({ entry }) => !existingLocations.has(entry.location))
 
+            if (newEntries.length > 0) {
+                await prisma.trip.createMany({
+                    data: newEntries.map(({ entry, index }) => {
+                        const coverId = category.photoPool[index % category.photoPool.length]
+                        const gallery = category.photoPool
+                            .filter((id) => id !== coverId)
+                            .slice(0, 4)
 
-        const chaleCategory = await prisma.tripCategory.create({
-            data: {
-                name: 'Chalé',
-                slug: 'chale',
-                image: "/chale.png"
+                        return {
+                            categoryId: tripCategory.id,
+                            location: entry.location,
+                            slug: category.slug + '_' + entry.location.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+                            startDate: AVAILABILITY_START,
+                            endDate: AVAILABILITY_END,
+                            pricePerDay: entry.pricePerDay,
+                            description: entry.description,
+                            coverImage: unsplash(coverId, 960),
+                            imagesUrl: gallery.map((id) => unsplash(id, 720)),
+                            highlights: category.highlights,
+                            maxGuests: entry.maxGuests,
+                        }
+                    }),
+                })
             }
-        })
-        const chale = [
-            {
-                categoryId: chaleCategory.id,
-                location: "Rancho da Lua, Petrópolis ",
-                slug: chaleCategory.slug + '_rancho-da-lua-petrololis',
-                pricePerDay: 490,
-                description: "O Chalé do artista  fica em condomínio com segurança 24 horas, com mata, pomar e linda vista, especialmente para a Pedra do Cantagalo. Possui banheiro, 1 cama de casal , cooktop de duas bocas , cafeteira elétrica,sanduicheira, forninho elétrico, filtro de barro e frigobar .TV Sky  e wi-fi. Uma varandinha com rede e pit fire.",
-                coverImage: "https://a0.muscache.com/im/pictures/b6593d81-46cf-4463-9ee0-bd805aec10a2.jpg?im_w=960",
-                imagesUrl: [
-                    "https://a0.muscache.com/im/pictures/92e30a4b-1909-40bc-8a4a-b721012ef01e.jpg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/9d550d5d-e60c-4508-8809-9c26ef1f4b08.jpg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/miso/Hosting-858706085482905941/original/be5c8015-9f89-4de9-9cb7-b85c5c3ad2ac.jpeg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/85478bce-fb72-44a7-ba1a-868d0f875ec8.jpg?im_w=1200",
-                ],
-                highlights: [
-                    "Vista para o horizonte da cidade",
-                    "Vista para o pátio",
-                    "Cozinha",
-                    'Wi-Fi',
-                    "Estacionamento incluído",
-                    "Piscina compartilhada",
-                    "Permitido animais",
-                    "TV",
-                    "Pátio ou varanda",
-                    "Indisponível: Alarme de monóxido de carbonoAlarme de monóxido de carbono"
-                ],
-                maxGuests: 2,
-            }
-        ]
-        await prisma.trip.createMany({
-            data: chale,
-        })
 
+            console.log(`Seeded ${newEntries.length} new trips for category "${category.name}" (${category.entries.length - newEntries.length} already existed)`)
+        }
 
-
-        const fazendaCategory = await prisma.tripCategory.create({
-            data: {
-                name: 'Fazenda',
-                slug: 'fazenda',
-                image: "/fazenda.png"
-            }
-        })
-        const fazenda = [
-            {
-                categoryId: fazendaCategory.id,
-                location: "Paraiso nas montanhas, Campos do Jordão ",
-                slug: fazendaCategory.slug + '_paraiso-nas-montanhas-campos-dos-jordao',
-                pricePerDay: 610,
-                description: "Estamos em zona rural, nossa fazendinha possui um total de 4 Casas e 4 Chalés construídos para locação à 1580mts de altitude, cercados de muitas araucárias e mata virgem em belíssimo vale na Mantiqueira à 14,2km do Capivari para aqueles que queiram o agito de Campos, mas nossa proposta é para se desconectar da cidade e se conectar com a natureza, descansar com toda a privacidade e tranquilidade do local. Oferecemos wi-fi para que possam estar conectados quando sentirem necessidade.",
-                coverImage: "https://a0.muscache.com/im/pictures/c506e947-a97c-49f6-9e6f-a30dd5d63c8d.jpg?im_w=1200",
-                imagesUrl: [
-                    "https://a0.muscache.com/im/pictures/6004945c-bb78-4f9b-8780-11dd924da115.jpg?im_w=1200",
-                    "https://a0.muscache.com/im/pictures/a1382a3e-54ed-447d-93b9-ac49d19a87fd.jpg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/2a24000a-f721-4925-a71a-4e9a3218402c.jpg?im_w=1200",
-                    "https://a0.muscache.com/im/pictures/32696897-c682-453c-a991-c983edb60e65.jpg?im_w=1200",
-                ],
-                highlights: [
-                    "Vista para as montanhas",
-                    "Vista para o vale",
-                    "Cozinha",
-                    "Wi-Fi rápido (94 Mbps)",
-                    "Espaço de trabalho exclusivo",
-                    "Estacionamento incluído",
-                    "Jacuzzi privativa: disponível o ano todo, disponível 24 horas",
-                    "Permitido animais",
-                    "Indisponível: Alarme de monóxido de carbonoAlarme de monóxido de carbono",
-                    "Indisponível: Detector de fumaçaDetector de fumaça",
-                ],
-                maxGuests: 2,
-            }
-        ]
-        await prisma.trip.createMany({
-            data: fazenda,
-        })
-
-
-        const resortCategory = await prisma.tripCategory.create({
-            data: {
-                name: "Resort",
-                slug: "resort",
-                image: "/resort.png"
-            }
-        })
-        const resort = [
-            {
-                categoryId: resortCategory.id,
-                location: "Spazzio DiRoma, Caldas Novas ",
-                slug: resortCategory.slug + '_spazzio-diroma-caldas-novas',
-                pricePerDay: 290,
-                description: "Hotel cheio de estilo, conforto, aconchego e segurança. O Apartamento foi pensado no bem estar da sua família, pra que se sintam em casa. Além da área de lazer do hotel, o grande destaque é o o acesso gratuito ao Acqua Park, maior parque aquático de Caldas. As fotos já dizem tudo, é só diversão, pra todos os gostos e idades, incluindo 2 parques Kids pra alegria da criançada, o melhor, fica ao lado do hotel, não precisa de carro, bicicleta, nada, apenas alguns passos. Bora se divertir.",
-                coverImage: "https://a0.muscache.com/im/pictures/4a795777-e94d-4207-9d19-950482dfcf2e.jpg?im_w=960",
-                imagesUrl: [
-                    "https://a0.muscache.com/im/pictures/322877c9-9246-47fd-928d-03397dcbf87b.jpg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/d9470c21-e8d9-4086-b0ea-473b78269e7e.jpg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/25e7ce58-2072-41a4-a377-674c3aa93043.jpg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/ea0ce5e2-9f92-43bd-9f93-daba554b1602.jpg?im_w=720",
-                ],
-                highlights: [
-                    "Vista para o horizonte da cidade",
-                    "Cozinha",
-                    "Wi-Fi",
-                    "Estacionamento incluído",
-                    "Piscina compartilhada",
-                    "Jacuzzi compartilhada: disponível o ano todo, disponível em horários específicos",
-                    "Sauna Compartilhada",
-                    "TV de alta definição de 50 polegadas com TV a cabo",
-                    "Elevador",
-                    "Câmeras de segurança na parte externa da propriedade",
-                ],
-                maxGuests: 4,
-            }
-        ]
-        await prisma.trip.createMany({
-            data: resort
-        })
-
-
-        const apartamentoCategory = await prisma.tripCategory.create({
-            data: {
-                name: "Apartamento",
-                slug: "apartamento",
-                image: "/apartamento.png"
-            }
-        })
-        const apartamento = [
-            {
-                categoryId: apartamentoCategory.id,
-                location: "São Conrado, Rio de Janeiro",
-                slug: apartamentoCategory.slug + '_sao-conrado-rio-de-janeiro',
-                pricePerDay: 200,
-                description: "Sejam bem-vindos a esse espaçoso e confortável lugar, cheio de vida para uma estadia maravilhosa. Apartamento bem equipado em prédio familiar com portaria 24h, mini mercado, 1 vaga de garagem, varanda com uma bela vista para as montanhas e a praia de São Conrado, há uma quadra da praia e próximo estação do metrô São Conrado e do Shopping Fashion Mall, com teatros, cinemas e restaurantes. Venha ter uma linda experiência nesse bairro cheio de charme e aventuras.",
-                coverImage: "https://a0.muscache.com/im/pictures/miso/Hosting-990521269902088286/original/175f3a8d-3791-40e2-ae6d-41ad00d6fdca.jpeg?im_w=960",
-                imagesUrl: [
-                    "https://a0.muscache.com/im/pictures/miso/Hosting-990521269902088286/original/c65c8b77-2023-475d-b9b2-7cf6402addb9.jpeg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/miso/Hosting-990521269902088286/original/112b1b39-874f-43b7-b430-8bf0bba2508b.jpeg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/miso/Hosting-990521269902088286/original/86c308d8-ac9c-4f9b-90f8-8da215626447.jpeg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/miso/Hosting-990521269902088286/original/2163a00f-7d0e-4c5a-9ca2-ca5594d258a0.jpeg?im_w=1200",
-                ],
-                highlights: [
-                    "Vista para as montanhas",
-                    "Cozinha",
-                    "Wi-Fi",
-                    "Estacionamento incluído",
-                    "Piscina compartilhada",
-                    "Vista para o mar",
-                    "Sauna Compartilhada",
-                    "TV de alta definição de 50 polegadas com TV a cabo",
-                    "Elevador",
-                    "Câmeras de segurança na parte externa da propriedade",
-                ],
-                maxGuests: 4,
-            }
-        ]
-        await prisma.trip.createMany({
-            data: apartamento
-        })
-
-
-
-        const motelCategory = await prisma.tripCategory.create({
-            data: {
-                name: "Motel",
-                slug: "motel",
-                image: "/motel.png"
-            }
-        })
-        const motel = [
-            {
-                categoryId: motelCategory.id,
-                location: "Le Baron, Belo Horizonte",
-                slug: motelCategory.slug + '_le-baron-belo-horizonte',
-                pricePerDay: 150,
-                description: "Surpreenda quem você gosta com um vale-presente do Motel Le Baron! Você escolhe o valor e quem usar o vale terá R$ 60,00, R$ 100,00 ou R$ 140,00 de desconto no total da diária. Ligue para o Le Baron e adquira seu!",
-                coverImage: "https://cdn.guiademoteis.com.br/Images/moteis/110-Motel-Le-Baron/suites/530-Simples/fotos/foto1-suites.jpg",
-                imagesUrl: [
-                    "https://cdn.guiademoteis.com.br/Images/moteis/110-Motel-Le-Baron/suites/1867-Teto-Solar/fotos/foto1-suites.jpg",
-                    "https://cdn.guiademoteis.com.br/imagens/suites/big/110_big_11068_1.jpg",
-                    "https://cdn.guiademoteis.com.br/Images/moteis/110-Motel-Le-Baron/suites/1868-Luxo-Luxo/fotos/foto3-suites.jpg",
-                    "https://cdn.guiademoteis.com.br/Images/moteis/110-Motel-Le-Baron/suites/11069-Studio-com-Hidro/fotos/foto1-suites.jpg",
-                ],
-                highlights: [
-                    "Ar-Condicionado",
-                    "Canais Eróticos",
-                    "CD Player",
-                    "Estacionamento",
-                    "Wi-fi",
-                    "Ar condicionado",
-                    "Frigobar",
-                ],
-                maxGuests: 4,
-            }
-        ]
-        await prisma.trip.createMany({
-            data: motel
-        })
-        const flatCategory = await prisma.tripCategory.create({
-            data: {
-                name: "Flat",
-                slug: "flat",
-                image: "/flat.png"
-            }
-        })
-        const flat = [
-            {
-                categoryId: flatCategory.id,
-                location: "Charmosa casa, São Paulo",
-                slug: flatCategory.slug + '_charmosa-casa-sao-paulo',
-                pricePerDay: 200,
-                description: "Quarto grande com armário, escrivaninha e uma confortável cama de Casal tamanho Queen Size. Sala com cozinha integrada. Localização privilegiada, 10 minutos a pé do Metrô Faria Lima e Instituto Tomie Ohtake.",
-                coverImage: "https://a0.muscache.com/im/pictures/airflow/Hosting-6652768/original/2420e900-c4af-44c7-bc16-3d3290740b9b.jpg?im_w=960",
-                imagesUrl: [
-                    "https://a0.muscache.com/im/pictures/airflow/Hosting-6652768/original/3498ea79-89eb-4e05-80c8-8ed7f90ba096.jpg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/airflow/Hosting-6652768/original/c1f74222-e9a3-454a-aa42-20fdd3147e42.jpg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/airflow/Hosting-6652768/original/7d44df7a-1787-4f40-9c8d-47d4db3a44fa.jpg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/97467120/cc936192_original.jpg?im_w=1200",
-                ],
-                highlights: [
-                    "Tranca na porta do quarto",
-                    "Cozinha",
-                    "Wi-Fi",
-                    "Espaço de trabalho exclusivo",
-                    "Estacionamento incluído",
-                    "TV de 46 polegadas",
-                    "Máquina de lavar na acomodação por Gratuito",
-                    "Secadora",
-                    "Pátio ou varanda (Compartilhada)",
-                    "Quintal privado — totalmente cercado"
-                ],
-                maxGuests: 1,
-            }
-        ]
-        await prisma.trip.createMany({
-            data: flat
-        })
-        const pousadaCategory = await prisma.tripCategory.create({
-            data: {
-                name: "Pousada",
-                slug: "pousada",
-                image: "/pousada.png"
-            }
-        })
-        const pousada = [
-            {
-                categoryId: pousadaCategory.id,
-                location: "Pouso dos Pássaros, Tiradentes",
-                slug: pousadaCategory.slug + '_pouso-dos-passaros-tiradentes',
-                pricePerDay: 150,
-                description: "Suíte recém reformada, com estilo rústico, rodeada por muita área verde, onde prevalece o som dos pássaros. Destinada a quem valoriza o contato com a natureza mas não abre mão de conforto, aconhego e privacidade.",
-                coverImage: "https://a0.muscache.com/im/pictures/e3322547-dda1-4985-9df2-937e28399109.jpg?im_w=960",
-                imagesUrl: [
-                    "https://a0.muscache.com/im/pictures/miso/Hosting-629133243552856341/original/2cbd818b-06b0-4546-8f35-02bfff047e83.jpeg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/miso/Hosting-629133243552856341/original/08c64b1b-45f0-41ff-aa43-d45d192970c5.jpeg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/miso/Hosting-629133243552856341/original/308158cf-d816-4314-bf13-624026e0ec50.jpeg?im_w=720",
-                    "https://a0.muscache.com/im/pictures/miso/Hosting-629133243552856341/original/a2971e63-3b26-4898-89e5-59fdfb60546b.jpeg?im_w=720",
-                ],
-                highlights: [
-                    " Vista para o jardim",
-                    "Wi-Fi",
-                    "Estacionamento incluído",
-                    "TV",
-                    "Pátio ou varanda (Compartilhada)",
-                    "Quintal",
-                    "É permitido deixar as malas",
-                    "Câmeras de segurança na parte externa da propriedade",
-                    "Indisponível: Alarme de monóxido de carbonoAlarme de monóxido de carbono",
-                    "Indisponível: Detector de fumaçaDetector de fumaça",
-                ],
-                maxGuests: 3,
-            }
-        ]
-        await prisma.trip.createMany({
-            data: pousada
-        })
-        console.log('Start seeding...')
+        console.log('Seeding finished.')
     }
     catch (error) {
         console.error('Error seeding: ', error)

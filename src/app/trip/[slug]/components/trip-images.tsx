@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 interface TripImagensProps {
     imageUrls: string[];
@@ -22,19 +23,29 @@ const TripImagens = ({ imageUrls, coverImage }: TripImagensProps) => {
                 height={720}
                 quality={100}
                 alt={coverImage}
-                className="w-full h-96 object-cover rounded-md"
+                className="w-full h-96 object-cover rounded-sm border border-border"
 
             />
             <div className="grid grid-cols-2 w-full gap-2 md:grid-cols-2">
                 {
                     imageUrls.map((imageUrls) => (
-                        <button key={imageUrls} onClick={() => handleImageClick(imageUrls)}>
+                        <button
+                            key={imageUrls}
+                            onClick={() => handleImageClick(imageUrls)}
+                            className={cn(
+                                "overflow-hidden rounded-sm border transition-colors",
+                                currentImage === imageUrls ? "border-gold" : "border-border"
+                            )}
+                        >
                             <Image
                                 src={imageUrls}
                                 alt={imageUrls}
                                 width={300}
                                 height={200}
-                                className="w-full  h-[187px] object-cover rounded-md cursor-pointer"
+                                className={cn(
+                                    "w-full h-[187px] object-cover cursor-pointer transition-all duration-500 hover:scale-105",
+                                    currentImage === imageUrls && "opacity-90"
+                                )}
                             />
                         </button>
                     ))

@@ -1,7 +1,13 @@
 import { prismaClient } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-const generatedQuery = (text: string, date: string | null) => {
+interface SearchFilters {
+    minPrice?: number;
+    maxPrice?: number;
+    guests?: number;
+}
+
+const generatedQuery = (text: string, date: string | null, filters: SearchFilters) => {
     let searchQuery: any = {
         OR: [
             {
@@ -29,10 +35,10 @@ const generatedQuery = (text: string, date: string | null) => {
         const formattedDate = new Date(date);
         formattedDate.setUTCHours(0, 0, 0, 0);
 
-        searchQuery.AND = [
+        searchQuery.AND.push(
             {
                 startDate: {
-                    lte: formattedDate.toISOString() 
+                    lte: formattedDate.toISOString()
                 }
             },
             {
@@ -40,7 +46,19 @@ const generatedQuery = (text: string, date: string | null) => {
                     gt: formattedDate.toISOString()
                 }
             }
-        ];
+        );
+    }
+
+    if (filters.minPrice !== undefined) {
+        searchQuery.AND.push({ pricePerDay: { gte: filters.minPrice } });
+    }
+
+    if (filters.maxPrice !== undefined) {
+        searchQuery.AND.push({ pricePerDay: { lte: filters.maxPrice } });
+    }
+
+    if (filters.guests !== undefined) {
+        searchQuery.AND.push({ maxGuests: { gte: filters.guests } });
     }
 
     return searchQuery;
@@ -58,8 +76,19 @@ export async function GET(request: Request) {
 
     const date = searchParams.get("date");
 
+    const minPriceParam = searchParams.get("minPrice");
+    const maxPriceParam = searchParams.get("maxPrice");
+    const guestsParam = searchParams.get("guests");
+
+    const filters: SearchFilters = {
+        minPrice: minPriceParam ? Number(minPriceParam) : undefined,
+        maxPrice: maxPriceParam ? Number(maxPriceParam) : undefined,
+        guests: guestsParam ? Number(guestsParam) : undefined,
+    };
+
     const trips = await prismaClient.trip.findMany({
-        where: generatedQuery(text, date)
+        where: generatedQuery(text, date, filters),
+        include: { reviews: { select: { rating: true } } },
     });
 
     return new NextResponse(JSON.stringify(trips), { status: 200 });

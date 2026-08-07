@@ -13,6 +13,10 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: 'cdn.guiademoteis.com.br'
+            },
+            {
+                protocol: 'https',
+                hostname: 'images.unsplash.com'
             }
         ]
     }

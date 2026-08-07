@@ -1,6 +1,5 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
 import { Trip } from "@prisma/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -54,8 +53,8 @@ const Confirmation = ({ params }: { params: { slug: string } }) => {
         }
     }, [params.slug, searchParams, status, router]);
 
-    if (loading) return <p className="text-center m-5">Carregando...</p>;
-    if (!trip) return <p>Viagem não encontrada</p>;
+    if (loading) return <p className="text-center m-10 text-muted-foreground">Carregando...</p>;
+    if (!trip) return <p className="text-center m-10 text-muted-foreground">Viagem não encontrada</p>;
 
     const handleBuyClick = async () => {
         const res = await fetch("/api/payment", {
@@ -99,26 +98,29 @@ const Confirmation = ({ params }: { params: { slug: string } }) => {
     const guests = searchParams.get("guest");
 
     return (
-        <Card className="flex flex-col m-auto mt-5 max-w-screen-xl p-2 gap-2">
-            <h1 className="font-semibold text-xl">Sua viagem para: {trip.location}</h1>
-            <div className="flex flex-col gap-2">
+        <div className="flex flex-col m-auto mt-10 max-w-screen-xl gap-6">
+            <div>
+                <span className="text-xs uppercase tracking-[0.2em] text-gold">Confirmação</span>
+                <h1 className="font-serif text-3xl">Sua viagem para {trip.location}</h1>
+            </div>
+            <div className="flex flex-col gap-6">
                 <TripImagens imageUrls={trip.imagesUrl} coverImage={trip.coverImage} />
-                <div>
-                    <h1 className="font-semibold text-xl">Informações sobre a viagem:</h1>
-                    <p>Local: {trip.location}</p>
-                    <h3>Preço total: R$ {totalPrice?.toFixed(2)}</h3>
-                    <div className="flex gap-2">
+                <div className="rounded-md border border-border p-6 flex flex-col gap-2">
+                    <h1 className="font-serif text-xl mb-1">Informações sobre a viagem</h1>
+                    <p className="text-muted-foreground">Local: {trip.location}</p>
+                    <h3 className="font-serif text-2xl text-gold">Preço total: R$ {totalPrice?.toFixed(2)}</h3>
+                    <div className="flex gap-2 text-muted-foreground">
                         <p>De: {startDate.toLocaleDateString()}</p>-
                         <p>Até: {endDate.toLocaleDateString()}</p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 text-muted-foreground">
                         <span>Hóspedes:</span>
                         <p>{guests}</p>
                     </div>
                 </div>
                 <Button onClick={handleBuyClick} className="flex w-full">Finalizar Reserva</Button>
             </div>
-        </Card>
+        </div>
     );
 };
 

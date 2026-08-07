@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import UserReservationCard from "./components/userReservationCard";
+import SectionHeading from "@/app/components/section-heading";
 
 const MyTrips = () => {
     const [reservations, setReservations] = useState<Prisma.ReservationsGetPayload<{
@@ -27,17 +28,17 @@ const MyTrips = () => {
         fetchReservations()
     }, [status])
     return (
-        <div className="flex flex-col m-auto max-w-screen-xl gap-5 mt-5">
-            <h1 className="uppercase font-bold text-center">Minhas Viagens</h1>
-            <div className="flex flex-col gap-2 md:grid md:grid-cols-2">
-                {reservations.length > 0 ? (
-                    reservations.map((reservation) => (
+        <div className="flex flex-col m-auto max-w-screen-xl gap-6 mt-10">
+            <SectionHeading eyebrow="Sua conta" title="Minhas Viagens" />
+            {reservations.length > 0 ? (
+                <div className="flex flex-col gap-3 md:grid md:grid-cols-2">
+                    {reservations.map((reservation) => (
                         <UserReservationCard key={reservation.id} reservation={reservation} fetchReservations={fetchReservations} />
-                    ))
-                ) : (
-                    <h2>Você ainda não fez nenhuma reserva!</h2>
-                )}
-            </div>
+                    ))}
+                </div>
+            ) : (
+                <p className="text-center text-muted-foreground py-10">Você ainda não fez nenhuma reserva!</p>
+            )}
         </div>
     );
 }

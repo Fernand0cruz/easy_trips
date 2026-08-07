@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Navbar from "../components/ui/navbar";
 import { ThemeProvider } from "@/providers/theme-providers";
 import { AuthProvider } from "@/providers/auth-provider";
 import Footer from "@/components/ui/footer";
+import { cn } from "@/lib/utils";
 
 import { Toaster } from "@/components/ui/toaster";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
 
 export const metadata: Metadata = {
   title: "::: EASY TRIPS :::",
@@ -22,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={cn(inter.variable, playfair.variable, "font-sans overflow-x-hidden")}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -30,7 +32,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <div className="flex flex-col h-screen">
+            <div className="flex flex-col min-h-screen">
               <Navbar />
               <div className="flex-1 px-5">
                 {children}

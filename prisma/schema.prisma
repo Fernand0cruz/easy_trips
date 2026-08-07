@@ -47,9 +47,12 @@ model User {
   email         String?        @unique
   emailVerified DateTime?
   image         String?
+  password      String?
   accounts      Account[]
   sessions      Session[]
   reservations  Reservations[]
+  reviews       Review[]
+  favorites     Favorite[]
 }
 
 model VerificationToken {
@@ -83,6 +86,8 @@ model Trip {
   maxGuests    Int @default(1)
   reservations Reservations[]
   category     tripCategory @relation(fields: [categoryId], references: [id])
+  reviews      Review[]
+  favorites    Favorite[]
 }
 
 model Reservations {
@@ -95,4 +100,32 @@ model Reservations {
   endDate   DateTime
   totalPaid Float
   guests    Int @default(5)
+}
+
+model Review {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  tripId    String   @db.ObjectId
+  trip      Trip     @relation(fields: [tripId], references: [id])
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+}
+
+model Favorite {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  tripId    String   @db.ObjectId
+  trip      Trip     @relation(fields: [tripId], references: [id])
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, tripId])
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  createdAt DateTime @default(now())
 }

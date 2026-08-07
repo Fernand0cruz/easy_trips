@@ -158,9 +158,9 @@ const onSubmit = async (data: z.infer<typeof TripReservationSchema>) => {
                         </FormItem>
                     )}
                 />
-                <div className="flex justify-between">
-                    <p>{totalDays} Dia(s)</p>
-                    <p>Preço: R$ {totalPrice.toFixed(2)}</p>
+                <div className="flex justify-between border-t border-border pt-3 text-sm">
+                    <p className="text-muted-foreground">{totalDays} Dia(s)</p>
+                    <p className="font-medium">Preço: R$ {totalPrice.toFixed(2)}</p>
                 </div>
                 <Button type="submit" className="w-full">Fazer reserva</Button>
             </form>

@@ -61,16 +61,6 @@ const LoginPage = () => {
                     <h1 className="font-serif text-3xl">Entrar</h1>
                 </div>
 
-                <Button variant="outline" className="w-full" onClick={() => signIn("google")}>
-                    Continuar com Google
-                </Button>
-
-                <div className="flex items-center gap-3 my-6">
-                    <div className="h-px flex-1 bg-border" />
-                    <span className="text-xs uppercase tracking-wide text-muted-foreground">ou</span>
-                    <div className="h-px flex-1 bg-border" />
-                </div>
-
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
                         <FormField

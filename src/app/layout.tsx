@@ -13,7 +13,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
 
 export const metadata: Metadata = {
-  title: "::: EASY TRIPS :::",
+  title: "EASY TRIPS",
   description: "Planeje a viagem dos seus sonhos com a ajuda da Easy Trips. Explore destinos paradisíacos, culturas fascinantes e aventuras emocionantes. Encontre passagens aéreas baratas, acomodações confortáveis e roteiros personalizados. Sua jornada começa aqui!",
 };
 
